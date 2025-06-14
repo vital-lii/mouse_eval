@@ -10,11 +10,7 @@ router.post('/', async (req, res) => {
       training_date,
       weight,
       food_intake,
-      water_intake,
-      training_duration,
-      response_count,
-      success_rate,
-      notes
+      water_intake
     } = req.body;
 
     // 验证必填字段
@@ -41,19 +37,14 @@ router.post('/', async (req, res) => {
     // 插入训练记录
     const [result] = await pool.execute(
       `INSERT INTO bell_training (
-        mouse_id, training_date, weight, food_intake, water_intake,
-        training_duration, response_count, success_rate, notes
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        mouse_id, training_date, weight, food_intake, water_intake
+      ) VALUES (?, ?, ?, ?, ?)`,
       [
         mouse_id,
         training_date,
         weight || 0,
         food_intake || 0,
-        water_intake || 0,
-        training_duration || 0,
-        response_count || 0,
-        success_rate || 0,
-        notes || ''
+        water_intake || 0
       ]
     );
 
@@ -63,11 +54,7 @@ router.post('/', async (req, res) => {
       training_date,
       weight,
       food_intake,
-      water_intake,
-      training_duration,
-      response_count,
-      success_rate,
-      notes
+      water_intake
     });
   } catch (error) {
     console.error('创建训练记录失败:', error);
@@ -127,31 +114,19 @@ router.put('/:id', async (req, res) => {
     const {
       weight,
       food_intake,
-      water_intake,
-      training_duration,
-      response_count,
-      success_rate,
-      notes
+      water_intake
     } = req.body;
 
     const [result] = await pool.execute(
       `UPDATE bell_training SET
         weight = ?,
         food_intake = ?,
-        water_intake = ?,
-        training_duration = ?,
-        response_count = ?,
-        success_rate = ?,
-        notes = ?
+        water_intake = ?
       WHERE id = ?`,
       [
         weight || 0,
         food_intake || 0,
         water_intake || 0,
-        training_duration || 0,
-        response_count || 0,
-        success_rate || 0,
-        notes || '',
         req.params.id
       ]
     );

@@ -10,7 +10,12 @@
         require-mark-placement="right-hanging"
       >
         <n-form-item label="小鼠编号" path="mouse_id">
-          <n-input v-model:value="formValue.mouse_id" placeholder="请输入小鼠编号" />
+          <n-select 
+            v-model:value="formValue.mouse_id" 
+            :options="miceOptions"
+            placeholder="请选择小鼠"
+            @update:value="validateField('mouse_id')"
+          />
         </n-form-item>
         <n-form-item label="干预日期" path="intervention_date">
           <n-date-picker v-model:value="formValue.intervention_date" type="date" clearable />
@@ -50,15 +55,17 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { NCard, NForm, NFormItem, NInput, NDatePicker, NInputNumber, NButton, useMessage } from 'naive-ui'
+import { ref, onMounted } from 'vue'
+import { NCard, NForm, NFormItem, NInput, NDatePicker, NInputNumber, NButton, useMessage, NSelect } from 'naive-ui'
 import { acupunctureApi } from '@/api/acupuncture'
+import { miceApi } from '@/api/mice'
 
 const message = useMessage()
 const formRef = ref(null)
+const miceOptions = ref([])
 
 const formValue = ref({
-  mouse_id: '',
+  mouse_id: null,
   intervention_date: null,
   temperature: null,
   humidity: null,
@@ -120,6 +127,24 @@ const rules = {
   }
 }
 
+// 获取小鼠列表
+const fetchMiceList = async () => {
+  try {
+    const mice = await miceApi.getAll()
+    miceOptions.value = mice.map(mouse => ({
+      label: `${mouse.custom_id || mouse.id} (${mouse.group_name})`,
+      value: mouse.id
+    }))
+  } catch (error) {
+    console.error('获取小鼠列表失败:', error)
+    message.error('获取小鼠列表失败')
+  }
+}
+
+onMounted(() => {
+  fetchMiceList()
+})
+
 // 单独验证某个字段
 const validateField = async (field) => {
   try {
@@ -136,7 +161,7 @@ const handleSubmit = async () => {
     message.success('记录提交成功')
     // 重置表单
     formValue.value = {
-      mouse_id: '',
+      mouse_id: null,
       intervention_date: null,
       temperature: null,
       humidity: null,

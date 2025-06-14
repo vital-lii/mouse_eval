@@ -8,62 +8,44 @@ router.post('/', async (req, res) => {
     const {
       mouse_id,
       evaluation_date,
-      evaluation_time,
-      operator,
-      evaluator,
-      activity_score,
-      grooming_score,
-      fur_score,
-      defecation_score,
-      escape_score,
-      vocalization_score,
-      attack_score,
-      freezing_score,
-      response_time_score,
-      feeding_willingness_score,
-      exploration_score,
-      notes
+      activity_level,
+      grooming_behavior
     } = req.body;
 
-    // 计算总分
-    const total_score = [
-      activity_score,
-      grooming_score,
-      fur_score,
-      defecation_score,
-      escape_score,
-      vocalization_score,
-      attack_score,
-      freezing_score,
-      response_time_score,
-      feeding_willingness_score,
-      exploration_score
-    ].reduce((a, b) => a + b, 0);
+    // 检查小鼠是否存在
+    const [mouseExists] = await pool.execute(
+      'SELECT id FROM mice WHERE id = ?',
+      [mouse_id]
+    );
 
+    if (mouseExists.length === 0) {
+      return res.status(404).json({ error: '小鼠编号不存在' });
+    }
+
+    // 插入评分记录
     const [result] = await pool.execute(
       `INSERT INTO evaluations (
-        mouse_id, evaluation_date, evaluation_time, operator, evaluator,
-        activity_score, grooming_score, fur_score, defecation_score,
-        escape_score, vocalization_score, attack_score, freezing_score,
-        response_time_score, feeding_willingness_score, exploration_score,
-        total_score, notes
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        mouse_id, evaluation_date, activity_score, grooming_score
+      ) VALUES (?, ?, ?, ?)`,
       [
-        mouse_id, evaluation_date, evaluation_time, operator, evaluator,
-        activity_score, grooming_score, fur_score, defecation_score,
-        escape_score, vocalization_score, attack_score, freezing_score,
-        response_time_score, feeding_willingness_score, exploration_score,
-        total_score, notes
+        mouse_id,
+        evaluation_date,
+        Number(activity_level || 0),
+        Number(grooming_behavior || 0)
       ]
     );
 
-    res.json({
+    res.status(201).json({
       id: result.insertId,
-      total_score,
+      mouse_id,
+      evaluation_date,
+      activity_score: activity_level,
+      grooming_score: grooming_behavior,
       message: '评分记录创建成功'
     });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error('创建评分记录失败:', error);
+    res.status(500).json({ error: '服务器错误' });
   }
 });
 
@@ -71,12 +53,13 @@ router.post('/', async (req, res) => {
 router.get('/mouse/:mouseId', async (req, res) => {
   try {
     const [rows] = await pool.execute(
-      'SELECT * FROM evaluations WHERE mouse_id = ? ORDER BY evaluation_date DESC, evaluation_time DESC',
+      'SELECT * FROM evaluations WHERE mouse_id = ? ORDER BY evaluation_date DESC',
       [req.params.mouseId]
     );
     res.json(rows);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error('获取评分记录失败:', error);
+    res.status(500).json({ error: '服务器错误' });
   }
 });
 
@@ -88,12 +71,12 @@ router.get('/:id', async (req, res) => {
       [req.params.id]
     );
     if (rows.length === 0) {
-      res.status(404).json({ message: '评分记录不存在' });
-      return;
+      return res.status(404).json({ error: '评分记录不存在' });
     }
     res.json(rows[0]);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error('获取评分记录失败:', error);
+    res.status(500).json({ error: '服务器错误' });
   }
 });
 
@@ -101,81 +84,33 @@ router.get('/:id', async (req, res) => {
 router.put('/:id', async (req, res) => {
   try {
     const {
-      activity_score,
-      grooming_score,
-      fur_score,
-      defecation_score,
-      escape_score,
-      vocalization_score,
-      attack_score,
-      freezing_score,
-      response_time_score,
-      feeding_willingness_score,
-      exploration_score,
-      notes
+      activity_level,
+      grooming_behavior
     } = req.body;
-
-    // 计算新的总分
-    const total_score = [
-      activity_score,
-      grooming_score,
-      fur_score,
-      defecation_score,
-      escape_score,
-      vocalization_score,
-      attack_score,
-      freezing_score,
-      response_time_score,
-      feeding_willingness_score,
-      exploration_score
-    ].reduce((a, b) => a + b, 0);
 
     const [result] = await pool.execute(
       `UPDATE evaluations SET
         activity_score = ?,
-        grooming_score = ?,
-        fur_score = ?,
-        defecation_score = ?,
-        escape_score = ?,
-        vocalization_score = ?,
-        attack_score = ?,
-        freezing_score = ?,
-        response_time_score = ?,
-        feeding_willingness_score = ?,
-        exploration_score = ?,
-        total_score = ?,
-        notes = ?
+        grooming_score = ?
       WHERE id = ?`,
       [
-        activity_score,
-        grooming_score,
-        fur_score,
-        defecation_score,
-        escape_score,
-        vocalization_score,
-        attack_score,
-        freezing_score,
-        response_time_score,
-        feeding_willingness_score,
-        exploration_score,
-        total_score,
-        notes,
+        Number(activity_level || 0),
+        Number(grooming_behavior || 0),
         req.params.id
       ]
     );
 
     if (result.affectedRows === 0) {
-      res.status(404).json({ message: '评分记录不存在' });
-      return;
+      return res.status(404).json({ error: '评分记录不存在' });
     }
 
     res.json({
       id: req.params.id,
-      total_score,
       message: '评分记录更新成功'
     });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error('更新评分记录失败:', error);
+    res.status(500).json({ error: '服务器错误' });
   }
 });
 
