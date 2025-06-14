@@ -118,7 +118,11 @@ const validateField = async (field) => {
 
 const handleSubmit = async () => {
   try {
+    console.log('开始表单验证...')
+    console.log('当前表单数据:', formValue.value)
+    
     await formRef.value?.validate()
+    console.log('表单验证通过')
     
     // 确保日期格式正确
     const payload = {
@@ -127,8 +131,11 @@ const handleSubmit = async () => {
       activity_level: Number(formValue.value.activity_level || 0),
       grooming_behavior: Number(formValue.value.grooming_behavior || 0)
     }
-
-    await evaluationsApi.create(payload)
+    
+    console.log('准备提交的数据:', payload)
+    const result = await evaluationsApi.create(payload)
+    console.log('提交成功，响应:', result)
+    
     message.success('评分提交成功')
     // 重置表单
     formValue.value = {
@@ -138,11 +145,19 @@ const handleSubmit = async () => {
       grooming_behavior: null
     }
   } catch (error) {
-    console.error('提交失败:', error)
+    console.error('提交失败，完整错误信息:', error)
+    console.error('错误类型:', typeof error)
+    console.error('错误堆栈:', error.stack)
+    
     if (error.error) {
+      console.error('API错误:', error.error)
       message.error(error.error)
     } else if (error.response?.data?.message) {
+      console.error('服务器响应错误:', error.response.data.message)
       message.error(error.response.data.message)
+    } else if (error.message) {
+      console.error('验证错误:', error.message)
+      message.error(error.message)
     } else {
       message.error('评分提交失败，请检查输入并重试')
     }

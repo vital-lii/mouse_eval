@@ -1,9 +1,7 @@
 import axios from 'axios'
 
 // 根据环境设置基础URL
-const baseURL = import.meta.env.PROD 
-  ? '/api'  // 生产环境，使用 /api 前缀
-  : 'http://localhost:3000/api'  // 开发环境
+const baseURL = '/api'  // 统一使用相对路径
 
 const api = axios.create({
   baseURL,
@@ -16,13 +14,11 @@ const api = axios.create({
 // 请求拦截器
 api.interceptors.request.use(
   config => {
-    if (import.meta.env.DEV) {
-      console.log('=== 发送请求 ===')
-      console.log('请求URL:', config.url)
-      console.log('请求方法:', config.method)
-      console.log('请求头:', config.headers)
-      console.log('请求数据:', config.data)
-    }
+    console.log('=== 发送请求 ===')
+    console.log('请求URL:', config.url)
+    console.log('请求方法:', config.method)
+    console.log('请求头:', config.headers)
+    console.log('请求数据:', config.data)
     return config
   },
   error => {
@@ -34,24 +30,20 @@ api.interceptors.request.use(
 // 响应拦截器
 api.interceptors.response.use(
   response => {
-    if (import.meta.env.DEV) {
-      console.log('=== 收到响应 ===')
-      console.log('响应状态:', response.status)
-      console.log('响应数据:', response.data)
-    }
+    console.log('=== 收到响应 ===')
+    console.log('响应状态:', response.status)
+    console.log('响应数据:', response.data)
     return response
   },
   error => {
-    if (import.meta.env.DEV) {
-      console.error('=== 响应错误 ===')
-      if (error.response) {
-        console.error('状态码:', error.response.status)
-        console.error('响应数据:', error.response.data)
-      } else if (error.request) {
-        console.error('请求已发送但没有收到响应')
-      } else {
-        console.error('请求配置错误:', error.message)
-      }
+    console.error('=== 响应错误 ===')
+    if (error.response) {
+      console.error('状态码:', error.response.status)
+      console.error('响应数据:', error.response.data)
+    } else if (error.request) {
+      console.error('请求已发送但没有收到响应')
+    } else {
+      console.error('请求配置错误:', error.message)
     }
 
     // 统一错误格式
