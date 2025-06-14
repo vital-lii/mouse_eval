@@ -119,7 +119,16 @@ const validateField = async (field) => {
 const handleSubmit = async () => {
   try {
     await formRef.value?.validate()
-    await evaluationsApi.create(formValue.value)
+    
+    // 确保日期格式正确
+    const payload = {
+      mouse_id: formValue.value.mouse_id,
+      evaluation_date: formValue.value.evaluation_date,
+      activity_level: Number(formValue.value.activity_level || 0),
+      grooming_behavior: Number(formValue.value.grooming_behavior || 0)
+    }
+
+    await evaluationsApi.create(payload)
     message.success('评分提交成功')
     // 重置表单
     formValue.value = {
@@ -129,12 +138,14 @@ const handleSubmit = async () => {
       grooming_behavior: null
     }
   } catch (error) {
+    console.error('提交失败:', error)
     if (error.error) {
       message.error(error.error)
+    } else if (error.response?.data?.message) {
+      message.error(error.response.data.message)
     } else {
-      message.error('评分提交失败')
+      message.error('评分提交失败，请检查输入并重试')
     }
-    console.error('提交失败:', error)
   }
 }
 </script> 

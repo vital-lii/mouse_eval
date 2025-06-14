@@ -30,45 +30,23 @@ export const evaluationsApi = {
 
   // 创建评估记录
   create(data) {
-    const payload = {
+    // 确保日期格式正确
+    const formattedData = {
       mouse_id: data.mouse_id,
-      evaluation_date: data.evaluation_date,
-      evaluation_time: data.evaluation_time || new Date().toLocaleTimeString(),
-      operator: data.operator,
-      evaluator: data.evaluator,
+      evaluation_date: data.evaluation_date ? new Date(data.evaluation_date).toISOString().split('T')[0] : null,
       activity_score: Number(data.activity_level || 0),
-      grooming_score: Number(data.grooming_behavior || 0),
-      fur_score: Number(data.fur_score || 0),
-      defecation_score: Number(data.defecation_score || 0),
-      escape_score: Number(data.escape_score || 0),
-      vocalization_score: Number(data.vocalization_score || 0),
-      attack_score: Number(data.attack_score || 0),
-      freezing_score: Number(data.freezing_score || 0),
-      response_time_score: Number(data.response_time_score || 0),
-      feeding_willingness_score: Number(data.feeding_willingness_score || 0),
-      exploration_score: Number(data.exploration_score || 0),
-      notes: data.notes || ''
+      grooming_score: Number(data.grooming_behavior || 0)
     }
-    return handleResponse(api.post('/evaluations', payload))
+    return handleResponse(api.post('/evaluations', formattedData))
   },
 
   // 更新评估记录
   update(id, data) {
-    const payload = {
+    const formattedData = {
       activity_score: Number(data.activity_level || 0),
-      grooming_score: Number(data.grooming_behavior || 0),
-      fur_score: Number(data.fur_score || 0),
-      defecation_score: Number(data.defecation_score || 0),
-      escape_score: Number(data.escape_score || 0),
-      vocalization_score: Number(data.vocalization_score || 0),
-      attack_score: Number(data.attack_score || 0),
-      freezing_score: Number(data.freezing_score || 0),
-      response_time_score: Number(data.response_time_score || 0),
-      feeding_willingness_score: Number(data.feeding_willingness_score || 0),
-      exploration_score: Number(data.exploration_score || 0),
-      notes: data.notes || ''
+      grooming_score: Number(data.grooming_behavior || 0)
     }
-    return handleResponse(api.put(`/evaluations/${id}`, payload))
+    return handleResponse(api.put(`/evaluations/${id}`, formattedData))
   },
 
   // 删除评估记录
