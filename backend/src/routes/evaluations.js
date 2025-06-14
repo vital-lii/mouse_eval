@@ -8,8 +8,8 @@ router.post('/', async (req, res) => {
     const {
       mouse_id,
       evaluation_date,
-      activity_level,
-      grooming_behavior
+      activity_score,
+      grooming_score
     } = req.body;
 
     console.log('收到评分数据:', req.body);
@@ -24,17 +24,26 @@ router.post('/', async (req, res) => {
       return res.status(404).json({ error: '小鼠编号不存在' });
     }
 
-    // 确保评分值为数字
-    const activity_score = Number(activity_level);
-    const grooming_score = Number(grooming_behavior);
+    // 检查必填字段
+    if (!mouse_id || !evaluation_date) {
+      return res.status(400).json({ error: '小鼠编号和评分日期为必填项' });
+    }
 
-    if (isNaN(activity_score) || isNaN(grooming_score)) {
-      return res.status(400).json({ error: '评分值必须是数字' });
+    // 确保评分值为数字且在有效范围内
+    const activity_value = Number(activity_score);
+    const grooming_value = Number(grooming_score);
+
+    if (isNaN(activity_value) || activity_value < 0 || activity_value > 3) {
+      return res.status(400).json({ error: '活动评分必须是0-3之间的数字' });
+    }
+
+    if (isNaN(grooming_value) || grooming_value < 0 || grooming_value > 3) {
+      return res.status(400).json({ error: '梳理评分必须是0-3之间的数字' });
     }
 
     console.log('转换后的评分:', {
-      activity_score,
-      grooming_score
+      activity_value,
+      grooming_value
     });
 
     // 插入评分记录
@@ -45,8 +54,8 @@ router.post('/', async (req, res) => {
       [
         mouse_id,
         evaluation_date,
-        activity_score,
-        grooming_score
+        activity_value,
+        grooming_value
       ]
     );
 

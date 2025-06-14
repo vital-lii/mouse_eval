@@ -178,8 +178,8 @@ const handleSubmit = async (e) => {
     const payload = {
       mouse_id: formValue.value.mouse_id,
       evaluation_date: formattedDate,
-      activity_level: parseInt(formValue.value.activity_level),  // 确保是整数
-      grooming_behavior: parseInt(formValue.value.grooming_behavior)  // 确保是整数
+      activity_score: Number(formValue.value.activity_level || 0),  // 改为activity_score
+      grooming_score: Number(formValue.value.grooming_behavior || 0)  // 改为grooming_score
     }
 
     console.log('准备提交的数据:', payload)
