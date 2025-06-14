@@ -114,4 +114,20 @@ router.put('/:id', async (req, res) => {
   }
 });
 
+// 获取所有评分记录
+router.get('/', async (req, res) => {
+  try {
+    const [rows] = await pool.execute(`
+      SELECT e.*, m.custom_id as mouse_custom_id 
+      FROM evaluations e 
+      LEFT JOIN mice m ON e.mouse_id = m.id 
+      ORDER BY e.evaluation_date DESC
+    `);
+    res.json(rows);
+  } catch (error) {
+    console.error('获取评分记录列表失败:', error);
+    res.status(500).json({ error: '服务器错误' });
+  }
+});
+
 module.exports = router; 
