@@ -18,7 +18,7 @@
 import { ref, h, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { 
-  NCard, NButton, NDataTable,
+  NCard, NButton, NDataTable, NRate,
   useMessage
 } from 'naive-ui'
 import { evaluationsApi } from '@/api/evaluations'
@@ -48,17 +48,27 @@ const columns = [
     key: 'evaluation_date',
     render: (row) => formatDate(row.evaluation_date)
   },
-  { 
-    title: '活动评分', 
+  {
+    title: '活动水平',
     key: 'activity_score',
-    width: 100,
-    align: 'center'
+    render(row) {
+      return h(NRate, {
+        value: row.activity_score,
+        readonly: true,
+        count: 3
+      })
+    }
   },
-  { 
-    title: '梳理评分', 
+  {
+    title: '梳理行为',
     key: 'grooming_score',
-    width: 100,
-    align: 'center'
+    render(row) {
+      return h(NRate, {
+        value: row.grooming_score,
+        readonly: true,
+        count: 3
+      })
+    }
   },
   {
     title: '操作',

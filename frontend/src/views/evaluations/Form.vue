@@ -28,12 +28,14 @@
         <n-form-item label="活动水平" path="activity_score">
           <n-rate 
             v-model:value="formValue.activity_score" 
+            :count="3"
             @update:value="handleFieldChange('activity_score', $event)"
           />
         </n-form-item>
         <n-form-item label="梳理行为" path="grooming_score">
           <n-rate 
             v-model:value="formValue.grooming_score" 
+            :count="3"
             @update:value="handleFieldChange('grooming_score', $event)"
           />
         </n-form-item>
@@ -63,21 +65,15 @@ const router = useRouter()
 const formValue = ref({
   mouse_id: null,
   evaluation_date: null,
-  activity_score: null,
-  grooming_score: null
+  activity_score: 0,
+  grooming_score: 0
 })
 
 const rules = {
   mouse_id: {
     required: true,
     message: '请选择小鼠',
-    trigger: ['blur', 'change'],
-    validator: (rule, value) => {
-      if (!value) {
-        return new Error('请选择小鼠')
-      }
-      return true
-    }
+    trigger: ['blur', 'change']
   },
   evaluation_date: {
     required: true,
@@ -96,23 +92,25 @@ const rules = {
     }
   },
   activity_score: {
-    required: true,
-    message: '请评分活动水平',
     trigger: ['change'],
     validator: (rule, value) => {
-      if (value === null || value === undefined || value === 0) {
-        return new Error('请评分活动水平')
+      if (value === null || value === undefined) {
+        formValue.value.activity_score = 0
+      }
+      if (value < 0 || value > 3) {
+        return new Error('活动水平评分必须在0-3之间')
       }
       return true
     }
   },
   grooming_score: {
-    required: true,
-    message: '请评分梳理行为',
     trigger: ['change'],
     validator: (rule, value) => {
-      if (value === null || value === undefined || value === 0) {
-        return new Error('请评分梳理行为')
+      if (value === null || value === undefined) {
+        formValue.value.grooming_score = 0
+      }
+      if (value < 0 || value > 3) {
+        return new Error('梳理行为评分必须在0-3之间')
       }
       return true
     }
@@ -192,8 +190,8 @@ const handleSubmit = async (e) => {
     formValue.value = {
       mouse_id: null,
       evaluation_date: null,
-      activity_score: null,
-      grooming_score: null
+      activity_score: 0,
+      grooming_score: 0
     }
 
     // 跳转到列表页
