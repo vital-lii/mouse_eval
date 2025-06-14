@@ -136,63 +136,68 @@ const validateField = async (field) => {
 const handleSubmit = async () => {
   try {
     console.log('开始表单验证...')
-    console.log('当前表单数据:', formValue.value)
-    
-    // 手动验证所有字段
-    const errors = []
-    for (const field of Object.keys(rules)) {
-      try {
-        await formRef.value?.validateField(field)
-      } catch (error) {
-        errors.push(error)
-        console.error(`${field} 验证失败:`, error)
-      }
-    }
-
-    if (errors.length > 0) {
-      console.error('表单验证失败:', errors)
-      throw new Error('请完整填写所有必填项')
-    }
-
-    console.log('表单验证通过')
-    
-    // 确保日期格式正确
-    const payload = {
+    console.log('当前表单数据:', {
       mouse_id: formValue.value.mouse_id,
       evaluation_date: formValue.value.evaluation_date,
-      activity_level: Number(formValue.value.activity_level || 0),
-      grooming_behavior: Number(formValue.value.grooming_behavior || 0)
+      activity_level: formValue.value.activity_level,
+      grooming_behavior: formValue.value.grooming_behavior
+    })
+    
+    // 检查所有字段是否已填写
+    if (!formValue.value.mouse_id) {
+      throw new Error('请选择小鼠')
+    }
+    if (!formValue.value.evaluation_date) {
+      throw new Error('请选择评分日期')
+    }
+    if (!formValue.value.activity_level) {
+      throw new Error('请评分活动水平')
+    }
+    if (!formValue.value.grooming_behavior) {
+      throw new Error('请评分梳理行为')
+    }
+
+    console.log('字段检查通过')
+    
+    // 格式化日期
+    const dateObj = new Date(formValue.value.evaluation_date)
+    const formattedDate = `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${String(dateObj.getDate()).padStart(2, '0')}`
+    
+    // 构建提交数据
+    const payload = {
+      mouse_id: formValue.value.mouse_id,
+      evaluation_date: formattedDate,
+      activity_level: Number(formValue.value.activity_level),
+      grooming_behavior: Number(formValue.value.grooming_behavior)
     }
 
     console.log('准备提交的数据:', payload)
-    const result = await evaluationsApi.create(payload)
-    console.log('提交成功，响应:', result)
     
-    message.success('评分提交成功')
-    // 重置表单
-    formValue.value = {
-      mouse_id: null,
-      evaluation_date: null,
-      activity_level: null,
-      grooming_behavior: null
+    try {
+      const result = await evaluationsApi.create(payload)
+      console.log('提交成功，响应:', result)
+      message.success('评分提交成功')
+      
+      // 重置表单
+      formValue.value = {
+        mouse_id: null,
+        evaluation_date: null,
+        activity_level: null,
+        grooming_behavior: null
+      }
+    } catch (apiError) {
+      console.error('API调用失败:', apiError)
+      if (apiError.error) {
+        message.error(apiError.error)
+      } else if (apiError.response?.data?.message) {
+        message.error(apiError.response.data.message)
+      } else {
+        message.error('提交失败，请稍后重试')
+      }
     }
   } catch (error) {
-    console.error('提交失败，完整错误信息:', error)
-    console.error('错误类型:', typeof error)
-    console.error('错误堆栈:', error.stack)
-    
-    if (error.error) {
-      console.error('API错误:', error.error)
-      message.error(error.error)
-    } else if (error.response?.data?.message) {
-      console.error('服务器响应错误:', error.response.data.message)
-      message.error(error.response.data.message)
-    } else if (error.message) {
-      console.error('验证错误:', error.message)
-      message.error(error.message)
-    } else {
-      message.error('评分提交失败，请检查输入并重试')
-    }
+    console.error('验证失败:', error.message)
+    message.error(error.message)
   }
 }
 </script> 
