@@ -178,8 +178,8 @@ const handleSubmit = async (e) => {
     const payload = {
       mouse_id: formValue.value.mouse_id,
       evaluation_date: formattedDate,
-      activity_level: formValue.value.activity_level || 0,  // 确保有默认值
-      grooming_behavior: formValue.value.grooming_behavior || 0  // 确保有默认值
+      activity_level: parseInt(formValue.value.activity_level),  // 确保是整数
+      grooming_behavior: parseInt(formValue.value.grooming_behavior)  // 确保是整数
     }
 
     console.log('准备提交的数据:', payload)
@@ -192,8 +192,8 @@ const handleSubmit = async (e) => {
     formValue.value = {
       mouse_id: null,
       evaluation_date: null,
-      activity_level: 0,  // 设置默认值为0
-      grooming_behavior: 0  // 设置默认值为0
+      activity_level: 0,
+      grooming_behavior: 0
     }
 
     // 跳转到列表页

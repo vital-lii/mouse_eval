@@ -12,12 +12,7 @@ router.post('/', async (req, res) => {
       grooming_behavior
     } = req.body;
 
-    console.log('收到评分数据:', {
-      mouse_id,
-      evaluation_date,
-      activity_level,
-      grooming_behavior
-    });
+    console.log('收到评分数据:', req.body);
 
     // 检查小鼠是否存在
     const [mouseExists] = await pool.execute(
@@ -32,6 +27,10 @@ router.post('/', async (req, res) => {
     // 确保评分值为数字
     const activity_score = Number(activity_level);
     const grooming_score = Number(grooming_behavior);
+
+    if (isNaN(activity_score) || isNaN(grooming_score)) {
+      return res.status(400).json({ error: '评分值必须是数字' });
+    }
 
     console.log('转换后的评分:', {
       activity_score,
