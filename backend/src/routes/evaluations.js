@@ -12,6 +12,13 @@ router.post('/', async (req, res) => {
       grooming_behavior
     } = req.body;
 
+    console.log('收到评分数据:', {
+      mouse_id,
+      evaluation_date,
+      activity_level,
+      grooming_behavior
+    });
+
     // 检查小鼠是否存在
     const [mouseExists] = await pool.execute(
       'SELECT id FROM mice WHERE id = ?',
@@ -22,6 +29,15 @@ router.post('/', async (req, res) => {
       return res.status(404).json({ error: '小鼠编号不存在' });
     }
 
+    // 确保评分值为数字
+    const activity_score = Number(activity_level);
+    const grooming_score = Number(grooming_behavior);
+
+    console.log('转换后的评分:', {
+      activity_score,
+      grooming_score
+    });
+
     // 插入评分记录
     const [result] = await pool.execute(
       `INSERT INTO evaluations (
@@ -30,17 +46,22 @@ router.post('/', async (req, res) => {
       [
         mouse_id,
         evaluation_date,
-        Number(activity_level || 0),
-        Number(grooming_behavior || 0)
+        activity_score,
+        grooming_score
       ]
     );
 
+    // 获取插入的记录
+    const [newRecord] = await pool.execute(
+      `SELECT e.*, m.custom_id as mouse_custom_id 
+       FROM evaluations e 
+       LEFT JOIN mice m ON e.mouse_id = m.id 
+       WHERE e.id = ?`,
+      [result.insertId]
+    );
+
     res.status(201).json({
-      id: result.insertId,
-      mouse_id,
-      evaluation_date,
-      activity_score: activity_level,
-      grooming_score: grooming_behavior,
+      ...newRecord[0],
       message: '评分记录创建成功'
     });
   } catch (error) {
