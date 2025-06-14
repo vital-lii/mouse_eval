@@ -57,20 +57,37 @@ const formValue = ref({
 const rules = {
   mouse_id: {
     required: true,
-    message: '请输入小鼠编号',
-    trigger: ['blur', 'input']
+    message: '请选择小鼠',
+    trigger: ['blur', 'change'],
+    validator: (rule, value) => {
+      if (!value) {
+        return new Error('请选择小鼠')
+      }
+      return true
+    }
   },
   evaluation_date: {
     required: true,
     message: '请选择评分日期',
-    trigger: ['blur', 'change']
+    trigger: ['blur', 'change'],
+    validator: (rule, value) => {
+      if (!value) {
+        return new Error('请选择评分日期')
+      }
+      const selectedDate = new Date(value)
+      const today = new Date()
+      if (selectedDate > today) {
+        return new Error('评分日期不能超过今天')
+      }
+      return true
+    }
   },
   activity_level: {
     required: true,
     message: '请评分活动水平',
     trigger: ['change'],
     validator: (rule, value) => {
-      if (value === null || value === undefined) {
+      if (value === null || value === undefined || value === 0) {
         return new Error('请评分活动水平')
       }
       return true
@@ -81,7 +98,7 @@ const rules = {
     message: '请评分梳理行为',
     trigger: ['change'],
     validator: (rule, value) => {
-      if (value === null || value === undefined) {
+      if (value === null || value === undefined || value === 0) {
         return new Error('请评分梳理行为')
       }
       return true
@@ -121,7 +138,22 @@ const handleSubmit = async () => {
     console.log('开始表单验证...')
     console.log('当前表单数据:', formValue.value)
     
-    await formRef.value?.validate()
+    // 手动验证所有字段
+    const errors = []
+    for (const field of Object.keys(rules)) {
+      try {
+        await formRef.value?.validateField(field)
+      } catch (error) {
+        errors.push(error)
+        console.error(`${field} 验证失败:`, error)
+      }
+    }
+
+    if (errors.length > 0) {
+      console.error('表单验证失败:', errors)
+      throw new Error('请完整填写所有必填项')
+    }
+
     console.log('表单验证通过')
     
     // 确保日期格式正确
@@ -131,7 +163,7 @@ const handleSubmit = async () => {
       activity_level: Number(formValue.value.activity_level || 0),
       grooming_behavior: Number(formValue.value.grooming_behavior || 0)
     }
-    
+
     console.log('准备提交的数据:', payload)
     const result = await evaluationsApi.create(payload)
     console.log('提交成功，响应:', result)
