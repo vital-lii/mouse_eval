@@ -25,16 +25,16 @@
             @update:value="handleFieldChange('evaluation_date', $event)"
           />
         </n-form-item>
-        <n-form-item label="活动水平" path="activity_level">
+        <n-form-item label="活动水平" path="activity_score">
           <n-rate 
-            v-model:value="formValue.activity_level" 
-            @update:value="handleFieldChange('activity_level', $event)"
+            v-model:value="formValue.activity_score" 
+            @update:value="handleFieldChange('activity_score', $event)"
           />
         </n-form-item>
-        <n-form-item label="梳理行为" path="grooming_behavior">
+        <n-form-item label="梳理行为" path="grooming_score">
           <n-rate 
-            v-model:value="formValue.grooming_behavior" 
-            @update:value="handleFieldChange('grooming_behavior', $event)"
+            v-model:value="formValue.grooming_score" 
+            @update:value="handleFieldChange('grooming_score', $event)"
           />
         </n-form-item>
         <n-form-item>
@@ -63,8 +63,8 @@ const router = useRouter()
 const formValue = ref({
   mouse_id: null,
   evaluation_date: null,
-  activity_level: null,
-  grooming_behavior: null
+  activity_score: null,
+  grooming_score: null
 })
 
 const rules = {
@@ -95,7 +95,7 @@ const rules = {
       return true
     }
   },
-  activity_level: {
+  activity_score: {
     required: true,
     message: '请评分活动水平',
     trigger: ['change'],
@@ -106,7 +106,7 @@ const rules = {
       return true
     }
   },
-  grooming_behavior: {
+  grooming_score: {
     required: true,
     message: '请评分梳理行为',
     trigger: ['change'],
@@ -161,10 +161,10 @@ const handleSubmit = async (e) => {
     if (!formValue.value.evaluation_date) {
       throw new Error('请选择评分日期')
     }
-    if (!formValue.value.activity_level) {
+    if (!formValue.value.activity_score) {
       throw new Error('请评分活动水平')
     }
-    if (!formValue.value.grooming_behavior) {
+    if (!formValue.value.grooming_score) {
       throw new Error('请评分梳理行为')
     }
 
@@ -178,8 +178,8 @@ const handleSubmit = async (e) => {
     const payload = {
       mouse_id: formValue.value.mouse_id,
       evaluation_date: formattedDate,
-      activity_score: Number(formValue.value.activity_level || 0),  // 改为activity_score
-      grooming_score: Number(formValue.value.grooming_behavior || 0)  // 改为grooming_score
+      activity_score: Number(formValue.value.activity_score || 0),
+      grooming_score: Number(formValue.value.grooming_score || 0)
     }
 
     console.log('准备提交的数据:', payload)
@@ -192,8 +192,8 @@ const handleSubmit = async (e) => {
     formValue.value = {
       mouse_id: null,
       evaluation_date: null,
-      activity_level: 0,
-      grooming_behavior: 0
+      activity_score: null,
+      grooming_score: null
     }
 
     // 跳转到列表页
