@@ -102,9 +102,12 @@ const evaluationData = ref(null)
 const loadEvaluationData = async () => {
   loading.value = true
   try {
+    console.log('加载评估详情，ID:', route.params.id)
     const data = await evaluationsApi.getById(route.params.id)
+    console.log('获取到评估数据:', data)
     evaluationData.value = data
   } catch (error) {
+    console.error('加载评估详情失败:', error)
     handleError(error, '加载评估信息')
   } finally {
     loading.value = false

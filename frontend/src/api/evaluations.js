@@ -41,8 +41,8 @@ export const evaluationsApi = {
     const formattedData = {
       mouse_id: data.mouse_id,
       evaluation_date: data.evaluation_date ? new Date(data.evaluation_date).toISOString().split('T')[0] : null,
-      activity_score: Number(data.activity_level || 0),
-      grooming_score: Number(data.grooming_behavior || 0)
+      activity_score: data.activity_level,  // 直接使用原始值，不做Number转换
+      grooming_score: data.grooming_behavior  // 直接使用原始值，不做Number转换
     }
     console.log('格式化后的数据:', formattedData)
     return handleResponse(api.post('/evaluations', formattedData))
