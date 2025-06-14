@@ -19,10 +19,18 @@ const routes = [
   },
   {
     path: '/evaluations',
-    name: 'Evaluation',
-    component: () => import('../views/evaluations/Form.vue'),
+    name: 'Evaluations',
+    component: () => import('../views/evaluations/List.vue'),
     meta: {
       title: '评估记录'
+    }
+  },
+  {
+    path: '/evaluations/new',
+    name: 'NewEvaluation',
+    component: () => import('../views/evaluations/Form.vue'),
+    meta: {
+      title: '添加评分'
     }
   },
   {
