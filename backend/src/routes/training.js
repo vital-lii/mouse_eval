@@ -5,6 +5,7 @@ const pool = require('../db/pool');
 // 创建训练记录
 router.post('/', async (req, res) => {
   try {
+    console.log('收到训练记录数据:', req.body);
     const {
       mouse_id,
       training_date,
@@ -42,20 +43,20 @@ router.post('/', async (req, res) => {
       [
         mouse_id,
         training_date,
-        weight || 0,
-        food_intake || 0,
-        water_intake || 0
+        Number(weight || 0),
+        Number(food_intake || 0),
+        Number(water_intake || 0)
       ]
     );
 
-    res.status(201).json({
-      id: result.insertId,
-      mouse_id,
-      training_date,
-      weight,
-      food_intake,
-      water_intake
-    });
+    // 获取新创建的记录
+    const [newRecord] = await pool.execute(
+      'SELECT * FROM bell_training WHERE id = ?',
+      [result.insertId]
+    );
+
+    console.log('创建的训练记录:', newRecord[0]);
+    res.status(201).json(newRecord[0]);
   } catch (error) {
     console.error('创建训练记录失败:', error);
     res.status(500).json({ error: '服务器错误' });
@@ -66,7 +67,10 @@ router.post('/', async (req, res) => {
 router.get('/', async (req, res) => {
   try {
     const [rows] = await pool.execute(
-      'SELECT * FROM bell_training ORDER BY training_date DESC'
+      `SELECT t.*, m.custom_id as mouse_custom_id 
+       FROM bell_training t
+       LEFT JOIN mice m ON t.mouse_id = m.id 
+       ORDER BY t.training_date DESC`
     );
     res.json(rows);
   } catch (error) {
@@ -79,7 +83,10 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
   try {
     const [rows] = await pool.execute(
-      'SELECT * FROM bell_training WHERE id = ?',
+      `SELECT t.*, m.custom_id as mouse_custom_id 
+       FROM bell_training t
+       LEFT JOIN mice m ON t.mouse_id = m.id 
+       WHERE t.id = ?`,
       [req.params.id]
     );
     
@@ -98,7 +105,11 @@ router.get('/:id', async (req, res) => {
 router.get('/mouse/:mouseId', async (req, res) => {
   try {
     const [rows] = await pool.execute(
-      'SELECT * FROM bell_training WHERE mouse_id = ? ORDER BY training_date DESC',
+      `SELECT t.*, m.custom_id as mouse_custom_id 
+       FROM bell_training t
+       LEFT JOIN mice m ON t.mouse_id = m.id 
+       WHERE t.mouse_id = ? 
+       ORDER BY t.training_date DESC`,
       [req.params.mouseId]
     );
     res.json(rows);
@@ -111,6 +122,7 @@ router.get('/mouse/:mouseId', async (req, res) => {
 // 更新训练记录
 router.put('/:id', async (req, res) => {
   try {
+    console.log('更新训练记录数据:', req.body);
     const {
       weight,
       food_intake,
@@ -124,9 +136,9 @@ router.put('/:id', async (req, res) => {
         water_intake = ?
       WHERE id = ?`,
       [
-        weight || 0,
-        food_intake || 0,
-        water_intake || 0,
+        Number(weight || 0),
+        Number(food_intake || 0),
+        Number(water_intake || 0),
         req.params.id
       ]
     );
@@ -137,10 +149,14 @@ router.put('/:id', async (req, res) => {
 
     // 获取更新后的记录
     const [updated] = await pool.execute(
-      'SELECT * FROM bell_training WHERE id = ?',
+      `SELECT t.*, m.custom_id as mouse_custom_id 
+       FROM bell_training t
+       LEFT JOIN mice m ON t.mouse_id = m.id 
+       WHERE t.id = ?`,
       [req.params.id]
     );
 
+    console.log('更新后的训练记录:', updated[0]);
     res.json(updated[0]);
   } catch (error) {
     console.error('更新训练记录失败:', error);

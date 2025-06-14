@@ -206,31 +206,37 @@ const handleSubmit = async () => {
     submitting.value = true
     
     const payload = {
-      mouse_id: formValue.value.mouse_id.trim(),
+      mouse_id: formValue.value.mouse_id,
       training_date: formValue.value.training_date,
-      weight: Number(formValue.value.weight),
-      food_intake: Number(formValue.value.food_intake),
-      water_intake: Number(formValue.value.water_intake)
+      weight: Number(formValue.value.weight || 0),
+      food_intake: Number(formValue.value.food_intake || 0),
+      water_intake: Number(formValue.value.water_intake || 0)
     }
 
+    console.log('准备提交的数据:', payload)
     await trainingApi.create(payload)
     message.success('记录提交成功')
-    handleCancel()
-  } catch (error) {
-    if (error.response) {
-      if (error.response.status === 404) {
-        message.error('小鼠编号不存在，请先添加小鼠')
-      } else if (error.response.status === 400) {
-        message.error(error.response.data?.message || '提交的数据格式不正确，请检查输入')
-      } else {
-        message.error(error.response.data?.message || '提交失败，请稍后重试')
-      }
-    } else if (error.error) {
-      message.error(error.error)
-    } else {
-      message.error('提交失败，请检查网络连接')
+    
+    // 重置表单
+    formValue.value = {
+      mouse_id: null,
+      training_date: null,
+      weight: 0,
+      food_intake: 0,
+      water_intake: 0
     }
+    
+    // 重置表单验证状态
+    formRef.value?.restoreValidation()
+  } catch (error) {
     console.error('提交失败:', error)
+    if (error.error) {
+      message.error(error.error)
+    } else if (error.response?.data?.message) {
+      message.error(error.response.data.message)
+    } else {
+      message.error(error.message || '提交失败，请稍后重试')
+    }
   } finally {
     submitting.value = false
   }
@@ -242,9 +248,9 @@ const handleCancel = () => {
   formValue.value = {
     mouse_id: null,
     training_date: null,
-    weight: null,
-    food_intake: null,
-    water_intake: null
+    weight: 0,
+    food_intake: 0,
+    water_intake: 0
   }
 }
 </script> 

@@ -67,29 +67,39 @@ const miceOptions = ref([])
 const formValue = ref({
   mouse_id: null,
   intervention_date: null,
-  temperature: null,
-  humidity: null,
-  anesthesia_concentration: null
+  temperature: 0,
+  humidity: 0,
+  anesthesia_concentration: 0
 })
 
 const rules = {
   mouse_id: {
     required: true,
-    message: '请输入小鼠编号',
-    trigger: ['blur', 'input']
+    message: '请选择小鼠',
+    trigger: ['blur', 'change']
   },
   intervention_date: {
     required: true,
     message: '请选择干预日期',
-    trigger: ['blur', 'change']
+    trigger: ['blur', 'change'],
+    validator: (rule, value) => {
+      if (!value) {
+        return new Error('请选择干预日期')
+      }
+      const selectedDate = new Date(value)
+      const today = new Date()
+      if (selectedDate > today) {
+        return new Error('干预日期不能超过今天')
+      }
+      return true
+    }
   },
   temperature: {
     required: true,
-    message: '请输入环境温度',
     trigger: ['change'],
     validator: (rule, value) => {
       if (value === null || value === undefined) {
-        return new Error('请输入环境温度')
+        formValue.value.temperature = 0
       }
       if (value < 0) {
         return new Error('温度不能小于0℃')
@@ -99,11 +109,10 @@ const rules = {
   },
   humidity: {
     required: true,
-    message: '请输入环境湿度',
     trigger: ['change'],
     validator: (rule, value) => {
       if (value === null || value === undefined) {
-        return new Error('请输入环境湿度')
+        formValue.value.humidity = 0
       }
       if (value < 0 || value > 100) {
         return new Error('湿度必须在0-100%之间')
@@ -113,11 +122,10 @@ const rules = {
   },
   anesthesia_concentration: {
     required: true,
-    message: '请输入麻醉维持浓度',
     trigger: ['change'],
     validator: (rule, value) => {
       if (value === null || value === undefined) {
-        return new Error('请输入麻醉维持浓度')
+        formValue.value.anesthesia_concentration = 0
       }
       if (value < 0 || value > 100) {
         return new Error('浓度必须在0-100%之间')
@@ -130,7 +138,9 @@ const rules = {
 // 获取小鼠列表
 const fetchMiceList = async () => {
   try {
+    console.log('获取小鼠列表...')
     const mice = await miceApi.getAll()
+    console.log('小鼠列表:', mice)
     miceOptions.value = mice.map(mouse => ({
       label: `${mouse.custom_id || mouse.id} (${mouse.group_name})`,
       value: mouse.id
@@ -142,6 +152,7 @@ const fetchMiceList = async () => {
 }
 
 onMounted(() => {
+  console.log('组件已挂载')
   fetchMiceList()
 })
 
@@ -157,25 +168,54 @@ const validateField = async (field) => {
 const handleSubmit = async () => {
   try {
     await formRef.value?.validate()
-    const response = await acupunctureApi.create(formValue.value)
+    submitting.value = true
+    
+    const payload = {
+      mouse_id: formValue.value.mouse_id,
+      intervention_date: formValue.value.intervention_date,
+      temperature: Number(formValue.value.temperature || 0),
+      humidity: Number(formValue.value.humidity || 0),
+      anesthesia_concentration: Number(formValue.value.anesthesia_concentration || 0)
+    }
+
+    console.log('准备提交的数据:', payload)
+    await acupunctureApi.create(payload)
     message.success('记录提交成功')
+    
     // 重置表单
     formValue.value = {
       mouse_id: null,
       intervention_date: null,
-      temperature: null,
-      humidity: null,
-      anesthesia_concentration: null
+      temperature: 0,
+      humidity: 0,
+      anesthesia_concentration: 0
     }
+    
+    // 重置表单验证状态
+    formRef.value?.restoreValidation()
   } catch (error) {
+    console.error('提交失败:', error)
     if (error.error) {
       message.error(error.error)
     } else if (error.response?.data?.message) {
       message.error(error.response.data.message)
     } else {
-      message.error('记录提交失败')
+      message.error(error.message || '提交失败，请稍后重试')
     }
-    console.error('提交失败:', error)
+  } finally {
+    submitting.value = false
+  }
+}
+
+// 取消操作
+const handleCancel = () => {
+  formRef.value?.restoreValidation()
+  formValue.value = {
+    mouse_id: null,
+    intervention_date: null,
+    temperature: 0,
+    humidity: 0,
+    anesthesia_concentration: 0
   }
 }
 </script> 
