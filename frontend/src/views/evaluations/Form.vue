@@ -53,10 +53,12 @@ import {
 } from 'naive-ui'
 import { evaluationsApi } from '@/api/evaluations'
 import { miceApi } from '@/api/mice'
+import { useRouter } from 'vue-router'
 
 const message = useMessage()
 const formRef = ref(null)
 const miceOptions = ref([])
+const router = useRouter()
 
 const formValue = ref({
   mouse_id: null,
@@ -150,12 +152,7 @@ const handleSubmit = async (e) => {
   
   try {
     console.log('开始表单提交...')
-    console.log('当前表单数据:', {
-      mouse_id: formValue.value.mouse_id,
-      evaluation_date: formValue.value.evaluation_date,
-      activity_level: formValue.value.activity_level,
-      grooming_behavior: formValue.value.grooming_behavior
-    })
+    console.log('当前表单数据:', formValue.value)
     
     // 检查所有字段是否已填写
     if (!formValue.value.mouse_id) {
@@ -187,32 +184,29 @@ const handleSubmit = async (e) => {
 
     console.log('准备提交的数据:', payload)
     
-    try {
-      console.log('调用 API...')
-      const result = await evaluationsApi.create(payload)
-      console.log('API调用成功，响应:', result)
-      message.success('评分提交成功')
-      
-      // 重置表单
-      formValue.value = {
-        mouse_id: null,
-        evaluation_date: null,
-        activity_level: null,
-        grooming_behavior: null
-      }
-    } catch (apiError) {
-      console.error('API调用失败:', apiError)
-      if (apiError.error) {
-        message.error(apiError.error)
-      } else if (apiError.response?.data?.message) {
-        message.error(apiError.response.data.message)
-      } else {
-        message.error('提交失败，请稍后重试')
-      }
+    const result = await evaluationsApi.create(payload)
+    console.log('API调用成功，响应:', result)
+    message.success('评分提交成功')
+    
+    // 重置表单
+    formValue.value = {
+      mouse_id: null,
+      evaluation_date: null,
+      activity_level: null,
+      grooming_behavior: null
     }
+
+    // 跳转到列表页
+    router.push('/evaluations')
   } catch (error) {
-    console.error('验证失败:', error.message)
-    message.error(error.message)
+    console.error('提交失败:', error)
+    if (error.error) {
+      message.error(error.error)
+    } else if (error.response?.data?.message) {
+      message.error(error.response.data.message)
+    } else {
+      message.error(error.message || '提交失败，请稍后重试')
+    }
   }
 }
 </script> 

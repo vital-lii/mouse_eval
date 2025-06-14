@@ -102,7 +102,7 @@ const evaluationData = ref(null)
 const loadEvaluationData = async () => {
   loading.value = true
   try {
-    const data = await evaluationsApi.getOne(route.params.id)
+    const data = await evaluationsApi.getById(route.params.id)
     evaluationData.value = data
   } catch (error) {
     handleError(error, '加载评估信息')
