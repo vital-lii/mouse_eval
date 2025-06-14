@@ -14,17 +14,28 @@
             v-model:value="formValue.mouse_id" 
             :options="miceOptions"
             placeholder="请选择小鼠"
-            @update:value="validateField('mouse_id')"
+            @update:value="handleFieldChange('mouse_id', $event)"
           />
         </n-form-item>
         <n-form-item label="评分日期" path="evaluation_date">
-          <n-date-picker v-model:value="formValue.evaluation_date" type="date" clearable />
+          <n-date-picker 
+            v-model:value="formValue.evaluation_date" 
+            type="date" 
+            clearable
+            @update:value="handleFieldChange('evaluation_date', $event)"
+          />
         </n-form-item>
         <n-form-item label="活动水平" path="activity_level">
-          <n-rate v-model:value="formValue.activity_level" @update:value="validateField('activity_level')" />
+          <n-rate 
+            v-model:value="formValue.activity_level" 
+            @update:value="handleFieldChange('activity_level', $event)"
+          />
         </n-form-item>
         <n-form-item label="梳理行为" path="grooming_behavior">
-          <n-rate v-model:value="formValue.grooming_behavior" @update:value="validateField('grooming_behavior')" />
+          <n-rate 
+            v-model:value="formValue.grooming_behavior" 
+            @update:value="handleFieldChange('grooming_behavior', $event)"
+          />
         </n-form-item>
         <n-form-item>
           <n-button type="primary" @click="handleSubmit">提交评分</n-button>
@@ -106,10 +117,18 @@ const rules = {
   }
 }
 
+// 字段变化处理
+const handleFieldChange = (field, value) => {
+  console.log(`字段 ${field} 变化:`, value)
+  formValue.value[field] = value
+}
+
 // 获取小鼠列表
 const fetchMiceList = async () => {
   try {
+    console.log('获取小鼠列表...')
     const mice = await miceApi.getAll()
+    console.log('小鼠列表:', mice)
     miceOptions.value = mice.map(mouse => ({
       label: `${mouse.custom_id || mouse.id} (${mouse.group_name})`,
       value: mouse.id
@@ -121,21 +140,16 @@ const fetchMiceList = async () => {
 }
 
 onMounted(() => {
+  console.log('组件已挂载')
   fetchMiceList()
 })
 
-// 单独验证某个字段
-const validateField = async (field) => {
+const handleSubmit = async (e) => {
+  // 阻止默认行为
+  e?.preventDefault?.()
+  
   try {
-    await formRef.value?.validateField(field)
-  } catch (error) {
-    // 忽略验证错误
-  }
-}
-
-const handleSubmit = async () => {
-  try {
-    console.log('开始表单验证...')
+    console.log('开始表单提交...')
     console.log('当前表单数据:', {
       mouse_id: formValue.value.mouse_id,
       evaluation_date: formValue.value.evaluation_date,
@@ -174,8 +188,9 @@ const handleSubmit = async () => {
     console.log('准备提交的数据:', payload)
     
     try {
+      console.log('调用 API...')
       const result = await evaluationsApi.create(payload)
-      console.log('提交成功，响应:', result)
+      console.log('API调用成功，响应:', result)
       message.success('评分提交成功')
       
       // 重置表单
