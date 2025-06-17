@@ -1,3 +1,6 @@
+-- 设置数据库字符集
+ALTER DATABASE mouse_eval_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
 -- 创建小鼠基本信息表
 CREATE TABLE IF NOT EXISTS mice (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -6,7 +9,7 @@ CREATE TABLE IF NOT EXISTS mice (
     weight DECIMAL(10,2),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- 创建响片训练记录表
 CREATE TABLE IF NOT EXISTS bell_training (
@@ -25,7 +28,7 @@ CREATE TABLE IF NOT EXISTS bell_training (
     special_notes TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (mouse_id) REFERENCES mice(id)
-);
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- 创建针刺干预记录表
 CREATE TABLE IF NOT EXISTS acupuncture_intervention (
@@ -34,7 +37,7 @@ CREATE TABLE IF NOT EXISTS acupuncture_intervention (
     intervention_date DATE,
     operator VARCHAR(50),
     weight DECIMAL(5,2),
-    general_condition ENUM('良好', '一般', '差'),
+    general_condition ENUM('良好', '一般', '差') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
     special_condition TEXT,
     anesthesia_start TIME,
     anesthesia_effect_time TIME,
@@ -44,14 +47,14 @@ CREATE TABLE IF NOT EXISTS acupuncture_intervention (
     needle_response TEXT,
     retention_status TEXT,
     end_time TIME,
-    recovery_quality ENUM('良好', '一般', '差'),
+    recovery_quality ENUM('良好', '一般', '差') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
     adverse_reactions TEXT,
     recovery_status TEXT,
     activity_score DECIMAL(3,1),
     notes TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (mouse_id) REFERENCES mice(id)
-);
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- 创建评分记录表
 CREATE TABLE IF NOT EXISTS evaluations (

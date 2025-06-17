@@ -59,9 +59,7 @@
     <n-spin :show="loading" description="加载中...">
       <template #icon>
         <n-icon>
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-            <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="M256 96v64m0 192v64m160-160h-64m-192 0H96m224-96l-48 48m-96 96l-48 48m192 0l-48-48m-96-96l-48-48"/>
-          </svg>
+          <div class="loading-spinner"></div>
         </n-icon>
       </template>
     </n-spin>
@@ -275,5 +273,19 @@ onMounted(async () => {
   padding: 24px;
   position: relative;
   min-height: 400px;
+}
+
+.loading-spinner {
+  width: 24px;
+  height: 24px;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #2080f0;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 </style> 
