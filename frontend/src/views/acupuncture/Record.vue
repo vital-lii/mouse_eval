@@ -20,30 +20,22 @@
         <n-form-item label="干预日期" path="intervention_date">
           <n-date-picker v-model:value="formValue.intervention_date" type="date" clearable />
         </n-form-item>
-        <n-form-item label="环境温度(℃)" path="temperature">
+        <n-form-item label="麻醉维持浓度(%)" path="maintenance_concentration">
           <n-input-number 
-            v-model:value="formValue.temperature" 
-            :min="0" 
-            :precision="1"
-            @update:value="validateField('temperature')"
-          />
-        </n-form-item>
-        <n-form-item label="环境湿度(%)" path="humidity">
-          <n-input-number 
-            v-model:value="formValue.humidity" 
+            v-model:value="formValue.maintenance_concentration" 
             :min="0" 
             :max="100" 
             :precision="1"
-            @update:value="validateField('humidity')"
+            @update:value="validateField('maintenance_concentration')"
           />
         </n-form-item>
-        <n-form-item label="麻醉维持浓度(%)" path="anesthesia_concentration">
+        <n-form-item label="针刺后活动评分" path="activity_score">
           <n-input-number 
-            v-model:value="formValue.anesthesia_concentration" 
+            v-model:value="formValue.activity_score" 
             :min="0" 
-            :max="100" 
+            :max="10" 
             :precision="1"
-            @update:value="validateField('anesthesia_concentration')"
+            @update:value="validateField('activity_score')"
           />
         </n-form-item>
         <n-form-item>
@@ -74,9 +66,8 @@ const submitting = ref(false)
 const formValue = ref({
   mouse_id: null,
   intervention_date: null,
-  temperature: 0,
-  humidity: 0,
-  anesthesia_concentration: 0
+  maintenance_concentration: 0,
+  activity_score: 0
 })
 
 const rules = {
@@ -105,41 +96,28 @@ const rules = {
       return true
     }
   },
-  temperature: {
+  maintenance_concentration: {
     required: true,
     trigger: ['change'],
     validator: (rule, value) => {
       if (value === null || value === undefined) {
-        formValue.value.temperature = 0
-      }
-      if (value < 0) {
-        return new Error('温度不能小于0℃')
-      }
-      return true
-    }
-  },
-  humidity: {
-    required: true,
-    trigger: ['change'],
-    validator: (rule, value) => {
-      if (value === null || value === undefined) {
-        formValue.value.humidity = 0
-      }
-      if (value < 0 || value > 100) {
-        return new Error('湿度必须在0-100%之间')
-      }
-      return true
-    }
-  },
-  anesthesia_concentration: {
-    required: true,
-    trigger: ['change'],
-    validator: (rule, value) => {
-      if (value === null || value === undefined) {
-        formValue.value.anesthesia_concentration = 0
+        formValue.value.maintenance_concentration = 0
       }
       if (value < 0 || value > 100) {
         return new Error('浓度必须在0-100%之间')
+      }
+      return true
+    }
+  },
+  activity_score: {
+    required: true,
+    trigger: ['change'],
+    validator: (rule, value) => {
+      if (value === null || value === undefined) {
+        formValue.value.activity_score = 0
+      }
+      if (value < 0 || value > 10) {
+        return new Error('评分必须在0-10分之间')
       }
       return true
     }
@@ -184,9 +162,8 @@ const handleSubmit = async () => {
     const payload = {
       mouse_id: formValue.value.mouse_id,
       intervention_date: formValue.value.intervention_date,
-      temperature: Number(formValue.value.temperature || 0),
-      humidity: Number(formValue.value.humidity || 0),
-      anesthesia_concentration: Number(formValue.value.anesthesia_concentration || 0)
+      maintenance_concentration: Number(formValue.value.maintenance_concentration || 0),
+      activity_score: Number(formValue.value.activity_score || 0)
     }
 
     console.log('准备提交的数据:', payload)
@@ -197,36 +174,27 @@ const handleSubmit = async () => {
     formValue.value = {
       mouse_id: null,
       intervention_date: null,
-      temperature: 0,
-      humidity: 0,
-      anesthesia_concentration: 0
+      maintenance_concentration: 0,
+      activity_score: 0
     }
-    
-    // 重置表单验证状态
-    formRef.value?.restoreValidation()
   } catch (error) {
-    console.error('提交失败:', error)
+    console.error('提交记录失败:', error)
     if (error.error) {
       message.error(error.error)
-    } else if (error.response?.data?.message) {
-      message.error(error.response.data.message)
+    } else if (error.message) {
+      message.error(error.message)
     } else {
-      message.error(error.message || '提交失败，请稍后重试')
+      message.error('提交记录失败')
     }
   } finally {
     submitting.value = false
   }
 }
+</script>
 
-// 取消操作
-const handleCancel = () => {
-  formRef.value?.restoreValidation()
-  formValue.value = {
-    mouse_id: null,
-    intervention_date: null,
-    temperature: 0,
-    humidity: 0,
-    anesthesia_concentration: 0
-  }
+<style scoped>
+.n-form {
+  max-width: 600px;
+  margin: 0 auto;
 }
-</script> 
+</style> 

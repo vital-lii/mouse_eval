@@ -9,8 +9,6 @@ router.post('/', async (req, res) => {
     const {
       mouse_id,
       intervention_date,
-      temperature,
-      humidity,
       anesthesia_concentration,
       operator,
       weight,
@@ -27,6 +25,7 @@ router.post('/', async (req, res) => {
       recovery_quality,
       adverse_reactions,
       recovery_status,
+      activity_score,
       notes
     } = req.body;
 
@@ -54,18 +53,16 @@ router.post('/', async (req, res) => {
     // 插入针刺记录
     const [result] = await pool.execute(
       `INSERT INTO acupuncture_intervention (
-        mouse_id, intervention_date, temperature, humidity, 
-        operator, weight, general_condition, special_condition,
+        mouse_id, intervention_date, operator, weight, 
+        general_condition, special_condition,
         anesthesia_start, anesthesia_effect_time, maintenance_concentration,
         wake_up_time, acupuncture_start_time, needle_response,
         retention_status, end_time, recovery_quality,
-        adverse_reactions, recovery_status, notes
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        adverse_reactions, recovery_status, activity_score, notes
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         mouse_id,
         intervention_date,
-        Number(temperature || 0),
-        Number(humidity || 0),
         operator || null,
         Number(weight || 0),
         general_condition || null,
@@ -81,6 +78,7 @@ router.post('/', async (req, res) => {
         recovery_quality || null,
         adverse_reactions || null,
         recovery_status || null,
+        Number(activity_score || 0),
         notes || null
       ]
     );
@@ -160,8 +158,6 @@ router.put('/:id', async (req, res) => {
   try {
     console.log('更新针刺记录数据:', req.body);
     const {
-      temperature,
-      humidity,
       operator,
       weight,
       general_condition,
@@ -177,13 +173,12 @@ router.put('/:id', async (req, res) => {
       recovery_quality,
       adverse_reactions,
       recovery_status,
+      activity_score,
       notes
     } = req.body;
 
     const [result] = await pool.execute(
       `UPDATE acupuncture_intervention SET
-        temperature = ?,
-        humidity = ?,
         operator = ?,
         weight = ?,
         general_condition = ?,
@@ -199,11 +194,10 @@ router.put('/:id', async (req, res) => {
         recovery_quality = ?,
         adverse_reactions = ?,
         recovery_status = ?,
+        activity_score = ?,
         notes = ?
       WHERE id = ?`,
       [
-        Number(temperature || 0),
-        Number(humidity || 0),
         operator || null,
         Number(weight || 0),
         general_condition || null,
@@ -219,6 +213,7 @@ router.put('/:id', async (req, res) => {
         recovery_quality || null,
         adverse_reactions || null,
         recovery_status || null,
+        Number(activity_score || 0),
         notes || null,
         req.params.id
       ]
@@ -229,16 +224,12 @@ router.put('/:id', async (req, res) => {
     }
 
     // 获取更新后的记录
-    const [updated] = await pool.execute(
-      `SELECT a.*, m.custom_id as mouse_custom_id 
-       FROM acupuncture_intervention a
-       LEFT JOIN mice m ON a.mouse_id = m.id 
-       WHERE a.id = ?`,
+    const [updatedRecord] = await pool.execute(
+      'SELECT * FROM acupuncture_intervention WHERE id = ?',
       [req.params.id]
     );
 
-    console.log('更新后的针刺记录:', updated[0]);
-    res.json(updated[0]);
+    res.json(updatedRecord[0]);
   } catch (error) {
     console.error('更新针刺记录失败:', error);
     res.status(500).json({ error: '服务器错误' });

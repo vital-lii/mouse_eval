@@ -33,8 +33,6 @@ CREATE TABLE IF NOT EXISTS acupuncture_intervention (
     mouse_id INT,
     intervention_date DATE,
     operator VARCHAR(50),
-    temperature DECIMAL(4,1),
-    humidity INT,
     weight DECIMAL(5,2),
     general_condition ENUM('良好', '一般', '差'),
     special_condition TEXT,
@@ -49,6 +47,7 @@ CREATE TABLE IF NOT EXISTS acupuncture_intervention (
     recovery_quality ENUM('良好', '一般', '差'),
     adverse_reactions TEXT,
     recovery_status TEXT,
+    activity_score DECIMAL(3,1),
     notes TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (mouse_id) REFERENCES mice(id)
