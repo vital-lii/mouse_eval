@@ -41,9 +41,12 @@ export const acupunctureApi = {
     const formattedData = {
       mouse_id: data.mouse_id,
       intervention_date: data.intervention_date ? new Date(data.intervention_date).toISOString().split('T')[0] : null,
-      temperature: Number(data.temperature || 0),
-      humidity: Number(data.humidity || 0),
-      anesthesia_concentration: Number(data.anesthesia_concentration || 0)
+      maintenance_concentration: data.maintenance_concentration,
+      activity_score: data.activity_score,
+      general_condition: data.general_condition,
+      recovery_quality: data.recovery_quality,
+      operator: data.operator,
+      special_condition: data.special_condition
     }
     console.log('格式化后的数据:', formattedData)
     return handleResponse(api.post('/acupuncture', formattedData))
