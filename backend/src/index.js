@@ -16,6 +16,9 @@ app.use((req, res, next) => {
   // 移除详细的服务器信息
   res.setHeader('Server', 'server');
   res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
   next();
 });
 
