@@ -8,10 +8,17 @@ const acupunctureRoutes = require('./routes/acupuncture');
 const trainingRoutes = require('./routes/training');
 
 const app = express();
+app.disable('x-powered-by');
 const port = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
+
+// 添加安全头中间件
+app.use((req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  next();
+});
 
 // 数据库连接配置
 const dbConfig = {
