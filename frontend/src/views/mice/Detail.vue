@@ -150,7 +150,10 @@ const acupunctureColumns = [
     title: '活动评分', 
     key: 'activity_score', 
     width: 90,
-    render: (row) => row.activity_score ? `${row.activity_score}/33` : '-'
+    render: (row) => {
+      if (!row.activity_score && row.activity_score !== 0) return '-'
+      return `${row.activity_score}/33`
+    }
   },
   { title: '一般状态', key: 'general_condition', width: 90 },
   { title: '恢复质量', key: 'recovery_quality', width: 90 },

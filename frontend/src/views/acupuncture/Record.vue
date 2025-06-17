@@ -460,7 +460,11 @@ const handleSubmit = async () => {
       mouse_id: formValue.value.mouse_id,
       intervention_date: formValue.value.intervention_date,
       maintenance_concentration: formValue.value.maintenance_concentration === '/' ? null : Number(formValue.value.maintenance_concentration || 0),
-      activity_score: totalScore.value
+      activity_score: totalScore.value,
+      general_condition: '良好',  // 默认值
+      recovery_quality: '良好',   // 默认值
+      operator: '操作员',        // 默认值
+      special_condition: null     // 备注字段
     }
 
     console.log('准备提交的数据:', payload)
