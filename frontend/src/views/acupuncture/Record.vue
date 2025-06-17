@@ -27,9 +27,9 @@
           <n-select 
             v-model:value="formValue.general_condition" 
             :options="[
-              { label: '良好', value: '良好' },
-              { label: '一般', value: '一般' },
-              { label: '差', value: '差' }
+              { label: '良好', value: 'good' },
+              { label: '一般', value: 'normal' },
+              { label: '差', value: 'poor' }
             ]"
             placeholder="请选择一般状态"
           />
@@ -38,9 +38,9 @@
           <n-select 
             v-model:value="formValue.recovery_quality" 
             :options="[
-              { label: '良好', value: '良好' },
-              { label: '一般', value: '一般' },
-              { label: '差', value: '差' }
+              { label: '良好', value: 'good' },
+              { label: '一般', value: 'normal' },
+              { label: '差', value: 'poor' }
             ]"
             placeholder="请选择恢复质量"
           />
@@ -364,8 +364,8 @@ const formValue = ref({
   mouse_id: null,
   intervention_date: null,
   operator: '',
-  general_condition: '一般',
-  recovery_quality: '一般',
+  general_condition: 'normal',
+  recovery_quality: 'normal',
   special_condition: '',
   maintenance_concentration: '',
   activity_scores: {
@@ -553,8 +553,8 @@ const handleSubmit = async () => {
       mouse_id: null,
       intervention_date: null,
       operator: '',
-      general_condition: '一般',
-      recovery_quality: '一般',
+      general_condition: 'normal',
+      recovery_quality: 'normal',
       special_condition: '',
       maintenance_concentration: '',
       activity_scores: {
