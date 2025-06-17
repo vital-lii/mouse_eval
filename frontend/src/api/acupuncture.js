@@ -50,12 +50,12 @@ export const acupunctureApi = {
     const formattedData = {
       mouse_id: data.mouse_id,
       intervention_date: data.intervention_date ? new Date(data.intervention_date).toISOString().split('T')[0] : null,
-      maintenance_concentration: data.maintenance_concentration === '/' ? null : Number(data.maintenance_concentration || 0),
-      activity_score: Number(data.activity_score || 0),
-      general_condition: data.general_condition || '良好',
-      recovery_quality: data.recovery_quality || '良好',
-      operator: data.operator || '操作员',
-      special_condition: data.special_condition || null
+      maintenance_concentration: data.maintenance_concentration === '/' ? null : Number(data.maintenance_concentration ?? 0),
+      activity_score: Number(data.activity_score ?? 0),
+      general_condition: data.general_condition ?? '一般',
+      recovery_quality: data.recovery_quality ?? '一般',
+      operator: data.operator ?? '操作员',
+      special_condition: data.special_condition ?? null
     }
     console.log('格式化后的数据:', formattedData)
     return handleResponse(api.post('/acupuncture', formattedData))
