@@ -526,11 +526,22 @@ const handleSubmit = async () => {
       mouse_id: formValue.value.mouse_id,
       intervention_date: formValue.value.intervention_date,
       operator: formValue.value.operator,
+      weight: null,
       general_condition: formValue.value.general_condition,
-      recovery_quality: formValue.value.recovery_quality,
       special_condition: formValue.value.special_condition || null,
+      anesthesia_start: null,
+      anesthesia_effect_time: null,
       maintenance_concentration: formValue.value.maintenance_concentration === '/' ? null : Number(formValue.value.maintenance_concentration || 0),
-      activity_score: totalScore.value
+      wake_up_time: null,
+      acupuncture_start_time: null,
+      needle_response: null,
+      retention_status: null,
+      end_time: null,
+      recovery_quality: formValue.value.recovery_quality,
+      adverse_reactions: null,
+      recovery_status: null,
+      activity_score: totalScore.value,
+      notes: null
     }
 
     console.log('准备提交的数据:', payload)
