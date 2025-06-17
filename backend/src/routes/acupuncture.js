@@ -11,7 +11,23 @@ router.post('/', async (req, res) => {
       intervention_date,
       temperature,
       humidity,
-      anesthesia_concentration
+      anesthesia_concentration,
+      operator,
+      weight,
+      general_condition,
+      special_condition,
+      anesthesia_start,
+      anesthesia_effect_time,
+      maintenance_concentration,
+      wake_up_time,
+      acupuncture_start_time,
+      needle_response,
+      retention_status,
+      end_time,
+      recovery_quality,
+      adverse_reactions,
+      recovery_status,
+      notes
     } = req.body;
 
     // 验证必填字段
@@ -37,21 +53,41 @@ router.post('/', async (req, res) => {
 
     // 插入针刺记录
     const [result] = await pool.execute(
-      `INSERT INTO acupuncture (
-        mouse_id, intervention_date, temperature, humidity, anesthesia_concentration
-      ) VALUES (?, ?, ?, ?, ?)`,
+      `INSERT INTO acupuncture_intervention (
+        mouse_id, intervention_date, temperature, humidity, 
+        operator, weight, general_condition, special_condition,
+        anesthesia_start, anesthesia_effect_time, maintenance_concentration,
+        wake_up_time, acupuncture_start_time, needle_response,
+        retention_status, end_time, recovery_quality,
+        adverse_reactions, recovery_status, notes
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         mouse_id,
         intervention_date,
         Number(temperature || 0),
         Number(humidity || 0),
-        Number(anesthesia_concentration || 0)
+        operator || null,
+        Number(weight || 0),
+        general_condition || null,
+        special_condition || null,
+        anesthesia_start || null,
+        anesthesia_effect_time || null,
+        Number(maintenance_concentration || 0),
+        wake_up_time || null,
+        acupuncture_start_time || null,
+        needle_response || null,
+        retention_status || null,
+        end_time || null,
+        recovery_quality || null,
+        adverse_reactions || null,
+        recovery_status || null,
+        notes || null
       ]
     );
 
     // 获取新创建的记录
     const [newRecord] = await pool.execute(
-      'SELECT * FROM acupuncture WHERE id = ?',
+      'SELECT * FROM acupuncture_intervention WHERE id = ?',
       [result.insertId]
     );
 
@@ -68,7 +104,7 @@ router.get('/', async (req, res) => {
   try {
     const [rows] = await pool.execute(
       `SELECT a.*, m.custom_id as mouse_custom_id 
-       FROM acupuncture a
+       FROM acupuncture_intervention a
        LEFT JOIN mice m ON a.mouse_id = m.id 
        ORDER BY a.intervention_date DESC`
     );
@@ -84,7 +120,7 @@ router.get('/:id', async (req, res) => {
   try {
     const [rows] = await pool.execute(
       `SELECT a.*, m.custom_id as mouse_custom_id 
-       FROM acupuncture a
+       FROM acupuncture_intervention a
        LEFT JOIN mice m ON a.mouse_id = m.id 
        WHERE a.id = ?`,
       [req.params.id]
@@ -106,7 +142,7 @@ router.get('/mouse/:mouseId', async (req, res) => {
   try {
     const [rows] = await pool.execute(
       `SELECT a.*, m.custom_id as mouse_custom_id 
-       FROM acupuncture a
+       FROM acupuncture_intervention a
        LEFT JOIN mice m ON a.mouse_id = m.id 
        WHERE a.mouse_id = ? 
        ORDER BY a.intervention_date DESC`,
@@ -126,19 +162,64 @@ router.put('/:id', async (req, res) => {
     const {
       temperature,
       humidity,
-      anesthesia_concentration
+      operator,
+      weight,
+      general_condition,
+      special_condition,
+      anesthesia_start,
+      anesthesia_effect_time,
+      maintenance_concentration,
+      wake_up_time,
+      acupuncture_start_time,
+      needle_response,
+      retention_status,
+      end_time,
+      recovery_quality,
+      adverse_reactions,
+      recovery_status,
+      notes
     } = req.body;
 
     const [result] = await pool.execute(
-      `UPDATE acupuncture SET
+      `UPDATE acupuncture_intervention SET
         temperature = ?,
         humidity = ?,
-        anesthesia_concentration = ?
+        operator = ?,
+        weight = ?,
+        general_condition = ?,
+        special_condition = ?,
+        anesthesia_start = ?,
+        anesthesia_effect_time = ?,
+        maintenance_concentration = ?,
+        wake_up_time = ?,
+        acupuncture_start_time = ?,
+        needle_response = ?,
+        retention_status = ?,
+        end_time = ?,
+        recovery_quality = ?,
+        adverse_reactions = ?,
+        recovery_status = ?,
+        notes = ?
       WHERE id = ?`,
       [
         Number(temperature || 0),
         Number(humidity || 0),
-        Number(anesthesia_concentration || 0),
+        operator || null,
+        Number(weight || 0),
+        general_condition || null,
+        special_condition || null,
+        anesthesia_start || null,
+        anesthesia_effect_time || null,
+        Number(maintenance_concentration || 0),
+        wake_up_time || null,
+        acupuncture_start_time || null,
+        needle_response || null,
+        retention_status || null,
+        end_time || null,
+        recovery_quality || null,
+        adverse_reactions || null,
+        recovery_status || null,
+        notes || null,
         req.params.id
       ]
     );
@@ -150,7 +231,7 @@ router.put('/:id', async (req, res) => {
     // 获取更新后的记录
     const [updated] = await pool.execute(
       `SELECT a.*, m.custom_id as mouse_custom_id 
-       FROM acupuncture a
+       FROM acupuncture_intervention a
        LEFT JOIN mice m ON a.mouse_id = m.id 
        WHERE a.id = ?`,
       [req.params.id]
@@ -168,7 +249,7 @@ router.put('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
   try {
     const [result] = await pool.execute(
-      'DELETE FROM acupuncture WHERE id = ?',
+      'DELETE FROM acupuncture_intervention WHERE id = ?',
       [req.params.id]
     );
 
