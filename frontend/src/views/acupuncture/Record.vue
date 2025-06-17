@@ -64,145 +64,143 @@
         </n-form-item>
 
         <n-card title="针刺后行为评分" embedded>
-          <n-grid :cols="2" :x-gap="12">
-            <n-gi>
-              <n-form-item label="1. 基础行为评分">
-                <n-grid :cols="2" :x-gap="12">
-                  <n-gi>
-                    <n-form-item label="活动度" path="activity_scores.activity">
-                      <n-input-number 
-                        v-model:value="formValue.activity_scores.activity" 
-                        :min="0" 
-                        :max="3" 
-                        :precision="0"
-                      />
-                    </n-form-item>
-                  </n-gi>
-                  <n-gi>
-                    <n-form-item label="理毛行为" path="activity_scores.grooming">
-                      <n-input-number 
-                        v-model:value="formValue.activity_scores.grooming" 
-                        :min="0" 
-                        :max="3" 
-                        :precision="0"
-                      />
-                    </n-form-item>
-                  </n-gi>
-                  <n-gi>
-                    <n-form-item label="竖毛反应" path="activity_scores.fur">
-                      <n-input-number 
-                        v-model:value="formValue.activity_scores.fur" 
-                        :min="0" 
-                        :max="3" 
-                        :precision="0"
-                      />
-                    </n-form-item>
-                  </n-gi>
-                  <n-gi>
-                    <n-form-item label="排便情况" path="activity_scores.defecation">
-                      <n-input-number 
-                        v-model:value="formValue.activity_scores.defecation" 
-                        :min="0" 
-                        :max="3" 
-                        :precision="0"
-                      />
-                    </n-form-item>
-                  </n-gi>
-                </n-grid>
-              </n-form-item>
-            </n-gi>
+          <n-space vertical :size="24">
+            <!-- 1. 基础行为评分 -->
+            <n-card title="1. 基础行为评分" embedded>
+              <n-grid :cols="2" :x-gap="24" :y-gap="12">
+                <n-gi>
+                  <n-form-item label="活动度" path="activity_scores.activity">
+                    <n-input-number 
+                      v-model:value="formValue.activity_scores.activity" 
+                      :min="0" 
+                      :max="3" 
+                      :precision="0"
+                    />
+                  </n-form-item>
+                </n-gi>
+                <n-gi>
+                  <n-form-item label="理毛行为" path="activity_scores.grooming">
+                    <n-input-number 
+                      v-model:value="formValue.activity_scores.grooming" 
+                      :min="0" 
+                      :max="3" 
+                      :precision="0"
+                    />
+                  </n-form-item>
+                </n-gi>
+                <n-gi>
+                  <n-form-item label="竖毛反应" path="activity_scores.fur">
+                    <n-input-number 
+                      v-model:value="formValue.activity_scores.fur" 
+                      :min="0" 
+                      :max="3" 
+                      :precision="0"
+                    />
+                  </n-form-item>
+                </n-gi>
+                <n-gi>
+                  <n-form-item label="排便情况" path="activity_scores.defecation">
+                    <n-input-number 
+                      v-model:value="formValue.activity_scores.defecation" 
+                      :min="0" 
+                      :max="3" 
+                      :precision="0"
+                    />
+                  </n-form-item>
+                </n-gi>
+              </n-grid>
+            </n-card>
 
-            <n-gi>
-              <n-form-item label="2. 操作相关评分">
-                <n-grid :cols="2" :x-gap="12">
-                  <n-gi>
-                    <n-form-item label="逃避反应" path="activity_scores.escape">
-                      <n-input-number 
-                        v-model:value="formValue.activity_scores.escape" 
-                        :min="0" 
-                        :max="3" 
-                        :precision="0"
-                      />
-                    </n-form-item>
-                  </n-gi>
-                  <n-gi>
-                    <n-form-item label="发声情况" path="activity_scores.vocalization">
-                      <n-input-number 
-                        v-model:value="formValue.activity_scores.vocalization" 
-                        :min="0" 
-                        :max="3" 
-                        :precision="0"
-                      />
-                    </n-form-item>
-                  </n-gi>
-                  <n-gi>
-                    <n-form-item label="攻击行为" path="activity_scores.attack">
-                      <n-input-number 
-                        v-model:value="formValue.activity_scores.attack" 
-                        :min="0" 
-                        :max="3" 
-                        :precision="0"
-                      />
-                    </n-form-item>
-                  </n-gi>
-                  <n-gi>
-                    <n-form-item label="僵直反应" path="activity_scores.freezing">
-                      <n-input-number 
-                        v-model:value="formValue.activity_scores.freezing" 
-                        :min="0" 
-                        :max="3" 
-                        :precision="0"
-                      />
-                    </n-form-item>
-                  </n-gi>
-                </n-grid>
-              </n-form-item>
-            </n-gi>
+            <!-- 2. 操作相关评分 -->
+            <n-card title="2. 操作相关评分" embedded>
+              <n-grid :cols="2" :x-gap="24" :y-gap="12">
+                <n-gi>
+                  <n-form-item label="逃避反应" path="activity_scores.escape">
+                    <n-input-number 
+                      v-model:value="formValue.activity_scores.escape" 
+                      :min="0" 
+                      :max="3" 
+                      :precision="0"
+                    />
+                  </n-form-item>
+                </n-gi>
+                <n-gi>
+                  <n-form-item label="发声情况" path="activity_scores.vocalization">
+                    <n-input-number 
+                      v-model:value="formValue.activity_scores.vocalization" 
+                      :min="0" 
+                      :max="3" 
+                      :precision="0"
+                    />
+                  </n-form-item>
+                </n-gi>
+                <n-gi>
+                  <n-form-item label="攻击行为" path="activity_scores.attack">
+                    <n-input-number 
+                      v-model:value="formValue.activity_scores.attack" 
+                      :min="0" 
+                      :max="3" 
+                      :precision="0"
+                    />
+                  </n-form-item>
+                </n-gi>
+                <n-gi>
+                  <n-form-item label="僵直反应" path="activity_scores.freezing">
+                    <n-input-number 
+                      v-model:value="formValue.activity_scores.freezing" 
+                      :min="0" 
+                      :max="3" 
+                      :precision="0"
+                    />
+                  </n-form-item>
+                </n-gi>
+              </n-grid>
+            </n-card>
 
-            <n-gi>
-              <n-form-item label="3. 训练相关评分">
-                <n-grid :cols="2" :x-gap="12">
-                  <n-gi>
-                    <n-form-item label="响应时间" path="activity_scores.response_time">
-                      <n-input-number 
-                        v-model:value="formValue.activity_scores.response_time" 
-                        :min="0" 
-                        :max="3" 
-                        :precision="0"
-                      />
-                    </n-form-item>
-                  </n-gi>
-                  <n-gi>
-                    <n-form-item label="进食意愿" path="activity_scores.feeding">
-                      <n-input-number 
-                        v-model:value="formValue.activity_scores.feeding" 
-                        :min="0" 
-                        :max="3" 
-                        :precision="0"
-                      />
-                    </n-form-item>
-                  </n-gi>
-                  <n-gi>
-                    <n-form-item label="探索行为" path="activity_scores.exploration">
-                      <n-input-number 
-                        v-model:value="formValue.activity_scores.exploration" 
-                        :min="0" 
-                        :max="3" 
-                        :precision="0"
-                      />
-                    </n-form-item>
-                  </n-gi>
-                </n-grid>
-              </n-form-item>
-            </n-gi>
+            <!-- 3. 训练相关评分 -->
+            <n-card title="3. 训练相关评分" embedded>
+              <n-grid :cols="2" :x-gap="24" :y-gap="12">
+                <n-gi>
+                  <n-form-item label="响应时间" path="activity_scores.response_time">
+                    <n-input-number 
+                      v-model:value="formValue.activity_scores.response_time" 
+                      :min="0" 
+                      :max="3" 
+                      :precision="0"
+                    />
+                  </n-form-item>
+                </n-gi>
+                <n-gi>
+                  <n-form-item label="进食意愿" path="activity_scores.feeding">
+                    <n-input-number 
+                      v-model:value="formValue.activity_scores.feeding" 
+                      :min="0" 
+                      :max="3" 
+                      :precision="0"
+                    />
+                  </n-form-item>
+                </n-gi>
+                <n-gi>
+                  <n-form-item label="探索行为" path="activity_scores.exploration">
+                    <n-input-number 
+                      v-model:value="formValue.activity_scores.exploration" 
+                      :min="0" 
+                      :max="3" 
+                      :precision="0"
+                    />
+                  </n-form-item>
+                </n-gi>
+              </n-grid>
+            </n-card>
 
-            <n-gi>
+            <!-- 总分显示 -->
+            <div class="score-summary">
               <n-statistic label="总分" :value="totalScore" />
-              <n-text depth="3">满分：33分</n-text>
-            </n-gi>
-          </n-grid>
+              <n-text depth="3">满分：33分(分数越高,状态越差)</n-text>
+            </div>
+          </n-space>
 
-          <n-collapse>
+          <n-collapse class="score-standards">
             <n-collapse-item title="评分标准说明" name="1">
               <n-space vertical>
                 <n-text>1. 基础行为评分（0-3分）</n-text>
@@ -592,8 +590,28 @@ const handleSubmit = async () => {
   margin: 0 auto;
 }
 
-.n-collapse {
-  margin-top: 16px;
+.score-standards {
+  margin-top: 24px;
+}
+
+.score-summary {
+  text-align: center;
+  padding: 16px;
+  background-color: #f5f7fa;
+  border-radius: 6px;
+}
+
+:deep(.n-card-header) {
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+
+:deep(.n-card) {
+  background-color: #ffffff;
+}
+
+:deep(.n-card.n-card--embedded) {
+  border: 1px solid #ebeef5;
 }
 
 :deep(.n-statistic) {
