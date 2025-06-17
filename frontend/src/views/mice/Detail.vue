@@ -142,6 +142,7 @@ const acupunctureColumns = [
     key: 'maintenance_concentration', 
     width: 90,
     render: (row) => {
+      console.log('渲染麻醉维持浓度:', row.maintenance_concentration)
       if (row.maintenance_concentration === null) return '/'
       return row.maintenance_concentration === 0 ? '0' : row.maintenance_concentration.toFixed(1)
     }
@@ -151,6 +152,7 @@ const acupunctureColumns = [
     key: 'activity_score', 
     width: 90,
     render: (row) => {
+      console.log('渲染活动评分:', row.activity_score)
       if (!row.activity_score && row.activity_score !== 0) return '-'
       return `${row.activity_score}/33`
     }
@@ -203,8 +205,11 @@ const loadEvaluationRecords = async () => {
 const loadAcupunctureRecords = async () => {
   loadingAcupuncture.value = true
   try {
+    console.log('开始加载针刺记录，小鼠ID:', route.params.id)
     const data = await acupunctureApi.getByMouseId(route.params.id)
+    console.log('获取到的针刺记录:', data)
     acupunctureRecords.value = data
+    console.log('更新后的针刺记录状态:', acupunctureRecords.value)
   } catch (error) {
     handleError(error, '加载针刺记录')
   } finally {
