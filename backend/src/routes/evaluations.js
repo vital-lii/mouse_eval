@@ -159,4 +159,23 @@ router.get('/', async (req, res) => {
   }
 });
 
+// 删除评分记录
+router.delete('/:id', async (req, res) => {
+  try {
+    const [result] = await pool.execute(
+      'DELETE FROM evaluations WHERE id = ?',
+      [req.params.id]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: '评分记录不存在' });
+    }
+
+    res.json({ message: '评分记录删除成功' });
+  } catch (error) {
+    console.error('删除评分记录失败:', error);
+    res.status(500).json({ error: '服务器错误' });
+  }
+});
+
 module.exports = router; 
