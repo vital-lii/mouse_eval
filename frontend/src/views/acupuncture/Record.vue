@@ -20,6 +20,38 @@
         <n-form-item label="干预日期" path="intervention_date">
           <n-date-picker v-model:value="formValue.intervention_date" type="date" clearable />
         </n-form-item>
+        <n-form-item label="操作员" path="operator">
+          <n-input v-model:value="formValue.operator" placeholder="请输入操作员姓名" />
+        </n-form-item>
+        <n-form-item label="一般状态" path="general_condition">
+          <n-select 
+            v-model:value="formValue.general_condition" 
+            :options="[
+              { label: '良好', value: '良好' },
+              { label: '一般', value: '一般' },
+              { label: '差', value: '差' }
+            ]"
+            placeholder="请选择一般状态"
+          />
+        </n-form-item>
+        <n-form-item label="恢复质量" path="recovery_quality">
+          <n-select 
+            v-model:value="formValue.recovery_quality" 
+            :options="[
+              { label: '良好', value: '良好' },
+              { label: '一般', value: '一般' },
+              { label: '差', value: '差' }
+            ]"
+            placeholder="请选择恢复质量"
+          />
+        </n-form-item>
+        <n-form-item label="特殊情况" path="special_condition">
+          <n-input 
+            v-model:value="formValue.special_condition" 
+            type="textarea" 
+            placeholder="请输入特殊情况（如有）"
+          />
+        </n-form-item>
         <n-form-item label="麻醉维持浓度(%)" path="maintenance_concentration">
           <n-input-group>
             <n-input 
@@ -331,6 +363,10 @@ const submitting = ref(false)
 const formValue = ref({
   mouse_id: null,
   intervention_date: null,
+  operator: '',
+  general_condition: '一般',
+  recovery_quality: '一般',
+  special_condition: '',
   maintenance_concentration: '',
   activity_scores: {
     // 基础行为评分
@@ -378,6 +414,36 @@ const rules = {
       const today = new Date()
       if (selectedDate > today) {
         return new Error('干预日期不能超过今天')
+      }
+      return true
+    }
+  },
+  operator: {
+    required: true,
+    trigger: ['blur', 'change'],
+    validator(rule, value) {
+      if (!value) {
+        return new Error('请输入操作员姓名')
+      }
+      return true
+    }
+  },
+  general_condition: {
+    required: true,
+    trigger: ['blur', 'change'],
+    validator(rule, value) {
+      if (!value) {
+        return new Error('请选择一般状态')
+      }
+      return true
+    }
+  },
+  recovery_quality: {
+    required: true,
+    trigger: ['blur', 'change'],
+    validator(rule, value) {
+      if (!value) {
+        return new Error('请选择恢复质量')
       }
       return true
     }
@@ -459,12 +525,12 @@ const handleSubmit = async () => {
     const payload = {
       mouse_id: formValue.value.mouse_id,
       intervention_date: formValue.value.intervention_date,
+      operator: formValue.value.operator,
+      general_condition: formValue.value.general_condition,
+      recovery_quality: formValue.value.recovery_quality,
+      special_condition: formValue.value.special_condition || null,
       maintenance_concentration: formValue.value.maintenance_concentration === '/' ? null : Number(formValue.value.maintenance_concentration || 0),
-      activity_score: totalScore.value,
-      general_condition: '一般',     // 修改默认值
-      recovery_quality: '一般',      // 修改默认值
-      operator: '操作员',
-      special_condition: null
+      activity_score: totalScore.value
     }
 
     console.log('准备提交的数据:', payload)
@@ -475,6 +541,10 @@ const handleSubmit = async () => {
     formValue.value = {
       mouse_id: null,
       intervention_date: null,
+      operator: '',
+      general_condition: '一般',
+      recovery_quality: '一般',
+      special_condition: '',
       maintenance_concentration: '',
       activity_scores: {
         activity: 0,
