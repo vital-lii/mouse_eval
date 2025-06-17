@@ -21,23 +21,284 @@
           <n-date-picker v-model:value="formValue.intervention_date" type="date" clearable />
         </n-form-item>
         <n-form-item label="麻醉维持浓度(%)" path="maintenance_concentration">
-          <n-input-number 
-            v-model:value="formValue.maintenance_concentration" 
-            :min="0" 
-            :max="100" 
-            :precision="1"
-            @update:value="validateField('maintenance_concentration')"
-          />
+          <n-input-group>
+            <n-input 
+              v-model:value="formValue.maintenance_concentration" 
+              placeholder="输入浓度或斜杠(/)"
+              @update:value="handleMaintenanceConcentrationChange"
+            />
+            <n-text depth="3" style="margin-left: 8px">输入0或/表示未使用麻醉</n-text>
+          </n-input-group>
         </n-form-item>
-        <n-form-item label="针刺后活动评分" path="activity_score">
-          <n-input-number 
-            v-model:value="formValue.activity_score" 
-            :min="0" 
-            :max="10" 
-            :precision="1"
-            @update:value="validateField('activity_score')"
-          />
-        </n-form-item>
+
+        <n-card title="针刺后行为评分" embedded>
+          <n-grid :cols="2" :x-gap="12">
+            <n-gi>
+              <n-form-item label="1. 基础行为评分">
+                <n-grid :cols="2" :x-gap="12">
+                  <n-gi>
+                    <n-form-item label="活动度" path="activity_scores.activity">
+                      <n-input-number 
+                        v-model:value="formValue.activity_scores.activity" 
+                        :min="0" 
+                        :max="3" 
+                        :precision="0"
+                      />
+                    </n-form-item>
+                  </n-gi>
+                  <n-gi>
+                    <n-form-item label="理毛行为" path="activity_scores.grooming">
+                      <n-input-number 
+                        v-model:value="formValue.activity_scores.grooming" 
+                        :min="0" 
+                        :max="3" 
+                        :precision="0"
+                      />
+                    </n-form-item>
+                  </n-gi>
+                  <n-gi>
+                    <n-form-item label="竖毛反应" path="activity_scores.fur">
+                      <n-input-number 
+                        v-model:value="formValue.activity_scores.fur" 
+                        :min="0" 
+                        :max="3" 
+                        :precision="0"
+                      />
+                    </n-form-item>
+                  </n-gi>
+                  <n-gi>
+                    <n-form-item label="排便情况" path="activity_scores.defecation">
+                      <n-input-number 
+                        v-model:value="formValue.activity_scores.defecation" 
+                        :min="0" 
+                        :max="3" 
+                        :precision="0"
+                      />
+                    </n-form-item>
+                  </n-gi>
+                </n-grid>
+              </n-form-item>
+            </n-gi>
+
+            <n-gi>
+              <n-form-item label="2. 操作相关评分">
+                <n-grid :cols="2" :x-gap="12">
+                  <n-gi>
+                    <n-form-item label="逃避反应" path="activity_scores.escape">
+                      <n-input-number 
+                        v-model:value="formValue.activity_scores.escape" 
+                        :min="0" 
+                        :max="3" 
+                        :precision="0"
+                      />
+                    </n-form-item>
+                  </n-gi>
+                  <n-gi>
+                    <n-form-item label="发声情况" path="activity_scores.vocalization">
+                      <n-input-number 
+                        v-model:value="formValue.activity_scores.vocalization" 
+                        :min="0" 
+                        :max="3" 
+                        :precision="0"
+                      />
+                    </n-form-item>
+                  </n-gi>
+                  <n-gi>
+                    <n-form-item label="攻击行为" path="activity_scores.attack">
+                      <n-input-number 
+                        v-model:value="formValue.activity_scores.attack" 
+                        :min="0" 
+                        :max="3" 
+                        :precision="0"
+                      />
+                    </n-form-item>
+                  </n-gi>
+                  <n-gi>
+                    <n-form-item label="僵直反应" path="activity_scores.freezing">
+                      <n-input-number 
+                        v-model:value="formValue.activity_scores.freezing" 
+                        :min="0" 
+                        :max="3" 
+                        :precision="0"
+                      />
+                    </n-form-item>
+                  </n-gi>
+                </n-grid>
+              </n-form-item>
+            </n-gi>
+
+            <n-gi>
+              <n-form-item label="3. 训练相关评分">
+                <n-grid :cols="2" :x-gap="12">
+                  <n-gi>
+                    <n-form-item label="响应时间" path="activity_scores.response_time">
+                      <n-input-number 
+                        v-model:value="formValue.activity_scores.response_time" 
+                        :min="0" 
+                        :max="3" 
+                        :precision="0"
+                      />
+                    </n-form-item>
+                  </n-gi>
+                  <n-gi>
+                    <n-form-item label="进食意愿" path="activity_scores.feeding">
+                      <n-input-number 
+                        v-model:value="formValue.activity_scores.feeding" 
+                        :min="0" 
+                        :max="3" 
+                        :precision="0"
+                      />
+                    </n-form-item>
+                  </n-gi>
+                  <n-gi>
+                    <n-form-item label="探索行为" path="activity_scores.exploration">
+                      <n-input-number 
+                        v-model:value="formValue.activity_scores.exploration" 
+                        :min="0" 
+                        :max="3" 
+                        :precision="0"
+                      />
+                    </n-form-item>
+                  </n-gi>
+                </n-grid>
+              </n-form-item>
+            </n-gi>
+
+            <n-gi>
+              <n-statistic label="总分" :value="totalScore" />
+              <n-text depth="3">满分：33分</n-text>
+            </n-gi>
+          </n-grid>
+
+          <n-collapse>
+            <n-collapse-item title="评分标准说明" name="1">
+              <n-space vertical>
+                <n-text>1. 基础行为评分（0-3分）</n-text>
+                <n-table :bordered="false" size="small">
+                  <thead>
+                    <tr>
+                      <th>评分项目</th>
+                      <th>0分</th>
+                      <th>1分</th>
+                      <th>2分</th>
+                      <th>3分</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>活动度</td>
+                      <td>正常活动</td>
+                      <td>活动减少</td>
+                      <td>显著减少</td>
+                      <td>几乎不动</td>
+                    </tr>
+                    <tr>
+                      <td>理毛行为</td>
+                      <td>正常理毛</td>
+                      <td>理毛减少</td>
+                      <td>很少理毛</td>
+                      <td>不理毛</td>
+                    </tr>
+                    <tr>
+                      <td>竖毛反应</td>
+                      <td>毛发平顺</td>
+                      <td>轻微竖毛</td>
+                      <td>明显竖毛</td>
+                      <td>全身竖毛</td>
+                    </tr>
+                    <tr>
+                      <td>排便情况</td>
+                      <td>正常排便</td>
+                      <td>轻度增加</td>
+                      <td>频繁</td>
+                      <td>腹泻</td>
+                    </tr>
+                  </tbody>
+                </n-table>
+
+                <n-text>2. 操作相关评分（0-3分）</n-text>
+                <n-table :bordered="false" size="small">
+                  <thead>
+                    <tr>
+                      <th>评分项目</th>
+                      <th>0分</th>
+                      <th>1分</th>
+                      <th>2分</th>
+                      <th>3分</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>逃避反应</td>
+                      <td>无逃避</td>
+                      <td>轻微逃避</td>
+                      <td>明显逃避</td>
+                      <td>剧烈挣扎</td>
+                    </tr>
+                    <tr>
+                      <td>发声情况</td>
+                      <td>无发声</td>
+                      <td>偶尔发声</td>
+                      <td>频繁发声</td>
+                      <td>持续发声</td>
+                    </tr>
+                    <tr>
+                      <td>攻击行为</td>
+                      <td>无攻击</td>
+                      <td>轻微防御</td>
+                      <td>尝试咬人</td>
+                      <td>主动攻击</td>
+                    </tr>
+                    <tr>
+                      <td>僵直反应</td>
+                      <td>无僵直</td>
+                      <td>短暂僵直</td>
+                      <td>间歇僵直</td>
+                      <td>持续僵直</td>
+                    </tr>
+                  </tbody>
+                </n-table>
+
+                <n-text>3. 训练相关评分（0-3分）</n-text>
+                <n-table :bordered="false" size="small">
+                  <thead>
+                    <tr>
+                      <th>评分项目</th>
+                      <th>0分</th>
+                      <th>1分</th>
+                      <th>2分</th>
+                      <th>3分</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>响应时间</td>
+                      <td>≤5秒</td>
+                      <td>5-15秒</td>
+                      <td>15-30秒</td>
+                      <td>>30秒</td>
+                    </tr>
+                    <tr>
+                      <td>进食意愿</td>
+                      <td>主动进食</td>
+                      <td>犹豫进食</td>
+                      <td>勉强进食</td>
+                      <td>拒绝进食</td>
+                    </tr>
+                    <tr>
+                      <td>探索行为</td>
+                      <td>主动探索</td>
+                      <td>谨慎探索</td>
+                      <td>很少探索</td>
+                      <td>拒绝探索</td>
+                    </tr>
+                  </tbody>
+                </n-table>
+              </n-space>
+            </n-collapse-item>
+          </n-collapse>
+        </n-card>
+
         <n-form-item>
           <n-button 
             type="primary" 
@@ -53,8 +314,12 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import { NCard, NForm, NFormItem, NInput, NDatePicker, NInputNumber, NButton, useMessage, NSelect } from 'naive-ui'
+import { ref, computed, onMounted } from 'vue'
+import { 
+  NCard, NForm, NFormItem, NInput, NDatePicker, NInputNumber, 
+  NButton, useMessage, NSelect, NGrid, NGi, NSpace, NTable,
+  NCollapse, NCollapseItem, NText, NStatistic
+} from 'naive-ui'
 import { acupunctureApi } from '@/api/acupuncture'
 import { miceApi } from '@/api/mice'
 
@@ -66,8 +331,29 @@ const submitting = ref(false)
 const formValue = ref({
   mouse_id: null,
   intervention_date: null,
-  maintenance_concentration: 0,
-  activity_score: 0
+  maintenance_concentration: '',
+  activity_scores: {
+    // 基础行为评分
+    activity: 0,
+    grooming: 0,
+    fur: 0,
+    defecation: 0,
+    // 操作相关评分
+    escape: 0,
+    vocalization: 0,
+    attack: 0,
+    freezing: 0,
+    // 训练相关评分
+    response_time: 0,
+    feeding: 0,
+    exploration: 0
+  }
+})
+
+// 计算总分
+const totalScore = computed(() => {
+  const scores = formValue.value.activity_scores
+  return Object.values(scores).reduce((sum, score) => sum + score, 0)
 })
 
 const rules = {
@@ -98,26 +384,20 @@ const rules = {
   },
   maintenance_concentration: {
     required: true,
-    trigger: ['change'],
+    trigger: ['change', 'blur'],
     validator: (rule, value) => {
-      if (value === null || value === undefined) {
-        formValue.value.maintenance_concentration = 0
+      if (!value && value !== 0) {
+        return new Error('请输入麻醉维持浓度或斜杠')
       }
-      if (value < 0 || value > 100) {
+      if (value === '/') {
+        return true
+      }
+      const num = parseFloat(value)
+      if (isNaN(num)) {
+        return new Error('请输入有效的数字或斜杠')
+      }
+      if (num < 0 || num > 100) {
         return new Error('浓度必须在0-100%之间')
-      }
-      return true
-    }
-  },
-  activity_score: {
-    required: true,
-    trigger: ['change'],
-    validator: (rule, value) => {
-      if (value === null || value === undefined) {
-        formValue.value.activity_score = 0
-      }
-      if (value < 0 || value > 10) {
-        return new Error('评分必须在0-10分之间')
       }
       return true
     }
@@ -154,6 +434,23 @@ const validateField = async (field) => {
   }
 }
 
+const handleMaintenanceConcentrationChange = (value) => {
+  // 如果输入斜杠，将值设为'/'
+  if (value === '/') {
+    formValue.value.maintenance_concentration = '/'
+    return
+  }
+  
+  // 如果是数字字符串，尝试转换为数字
+  const num = parseFloat(value)
+  if (!isNaN(num)) {
+    // 限制在0-100之间，保留一位小数
+    formValue.value.maintenance_concentration = Math.min(100, Math.max(0, num)).toFixed(1)
+  } else if (value === '') {
+    formValue.value.maintenance_concentration = ''
+  }
+}
+
 const handleSubmit = async () => {
   try {
     await formRef.value?.validate()
@@ -162,8 +459,8 @@ const handleSubmit = async () => {
     const payload = {
       mouse_id: formValue.value.mouse_id,
       intervention_date: formValue.value.intervention_date,
-      maintenance_concentration: Number(formValue.value.maintenance_concentration || 0),
-      activity_score: Number(formValue.value.activity_score || 0)
+      maintenance_concentration: formValue.value.maintenance_concentration === '/' ? null : Number(formValue.value.maintenance_concentration || 0),
+      activity_score: totalScore.value
     }
 
     console.log('准备提交的数据:', payload)
@@ -174,8 +471,20 @@ const handleSubmit = async () => {
     formValue.value = {
       mouse_id: null,
       intervention_date: null,
-      maintenance_concentration: 0,
-      activity_score: 0
+      maintenance_concentration: '',
+      activity_scores: {
+        activity: 0,
+        grooming: 0,
+        fur: 0,
+        defecation: 0,
+        escape: 0,
+        vocalization: 0,
+        attack: 0,
+        freezing: 0,
+        response_time: 0,
+        feeding: 0,
+        exploration: 0
+      }
     }
   } catch (error) {
     console.error('提交记录失败:', error)
@@ -194,7 +503,19 @@ const handleSubmit = async () => {
 
 <style scoped>
 .n-form {
-  max-width: 600px;
+  max-width: 800px;
   margin: 0 auto;
+}
+
+.n-collapse {
+  margin-top: 16px;
+}
+
+:deep(.n-statistic) {
+  margin-top: 16px;
+}
+
+:deep(.n-table) {
+  margin: 8px 0;
 }
 </style> 

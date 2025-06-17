@@ -130,11 +130,30 @@ const evaluationColumns = [
 ]
 
 const acupunctureColumns = [
-  { title: '干预日期', key: 'intervention_date', width: 100 },
+  { 
+    title: '干预日期', 
+    key: 'intervention_date', 
+    width: 100,
+    render: (row) => formatDate(row.intervention_date)
+  },
   { title: '操作者', key: 'operator', width: 100 },
-  { title: '温度(℃)', key: 'temperature', width: 80 },
-  { title: '湿度(%)', key: 'humidity', width: 80 },
-  { title: '麻醉浓度(%)', key: 'anesthesia_concentration', width: 90 },
+  { 
+    title: '麻醉维持浓度(%)', 
+    key: 'maintenance_concentration', 
+    width: 90,
+    render: (row) => {
+      if (row.maintenance_concentration === null) return '/'
+      return row.maintenance_concentration === 0 ? '0' : row.maintenance_concentration.toFixed(1)
+    }
+  },
+  { 
+    title: '活动评分', 
+    key: 'activity_score', 
+    width: 90,
+    render: (row) => row.activity_score ? `${row.activity_score}/33` : '-'
+  },
+  { title: '一般状态', key: 'general_condition', width: 90 },
+  { title: '恢复质量', key: 'recovery_quality', width: 90 },
   { title: '备注', key: 'special_condition', ellipsis: true }
 ]
 
@@ -214,6 +233,19 @@ const formatDateTime = (dateString) => {
       day: '2-digit',
       hour: '2-digit',
       minute: '2-digit'
+    }).replace(/\//g, '-')
+  } catch {
+    return dateString
+  }
+}
+
+const formatDate = (dateString) => {
+  if (!dateString) return ''
+  try {
+    return new Date(dateString).toLocaleDateString('zh-CN', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
     }).replace(/\//g, '-')
   } catch {
     return dateString
