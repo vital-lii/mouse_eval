@@ -11,14 +11,16 @@ const app = express();
 app.disable('x-powered-by');
 const port = process.env.PORT || 3000;
 
-app.use(cors());
-app.use(express.json());
-
-// 添加安全头中间件
+// 设置安全相关的响应头
 app.use((req, res, next) => {
+  // 移除详细的服务器信息
+  res.setHeader('Server', 'server');
   res.setHeader('X-Content-Type-Options', 'nosniff');
   next();
 });
+
+app.use(cors());
+app.use(express.json());
 
 // 数据库连接配置
 const dbConfig = {

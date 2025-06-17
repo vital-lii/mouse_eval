@@ -47,7 +47,13 @@
           />
         </n-form-item>
         <n-form-item>
-          <n-button type="primary" @click="handleSubmit">提交记录</n-button>
+          <n-button 
+            type="primary" 
+            @click="handleSubmit"
+            :loading="submitting"
+          >
+            提交记录
+          </n-button>
         </n-form-item>
       </n-form>
     </n-card>
@@ -63,6 +69,7 @@ import { miceApi } from '@/api/mice'
 const message = useMessage()
 const formRef = ref(null)
 const miceOptions = ref([])
+const submitting = ref(false)
 
 const formValue = ref({
   mouse_id: null,
@@ -75,14 +82,18 @@ const formValue = ref({
 const rules = {
   mouse_id: {
     required: true,
-    message: '请选择小鼠',
-    trigger: ['blur', 'change']
+    trigger: ['blur', 'change'],
+    validator(rule, value) {
+      if (!value) {
+        return new Error('请选择小鼠')
+      }
+      return true
+    }
   },
   intervention_date: {
     required: true,
-    message: '请选择干预日期',
     trigger: ['blur', 'change'],
-    validator: (rule, value) => {
+    validator(rule, value) {
       if (!value) {
         return new Error('请选择干预日期')
       }

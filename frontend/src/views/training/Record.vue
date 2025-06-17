@@ -99,11 +99,8 @@ const rules = {
     required: true,
     trigger: ['blur', 'input', 'change'],
     validator(rule, value) {
-      if (!value?.trim()) {
-        return new Error('请输入小鼠编号')
-      }
-      if (value.trim().length > 50) {
-        return new Error('编号长度不能超过50个字符')
+      if (!value) {
+        return new Error('请选择小鼠')
       }
       return true
     }
